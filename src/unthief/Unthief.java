@@ -14,7 +14,7 @@ public class Unthief{
 	public Unthief() {
 		Observer v3d = new View3D();
 		
-		MainControl mc = new MainControl(v3d);
+		new MainControl(v3d);
 	}
 
 }

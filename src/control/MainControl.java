@@ -4,35 +4,38 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
-import view.View3D;
+import data.DeNoise;
+import data.Filter;
+import data.Images;
+import data.Interference;
+import data.Noise;
+import data.User;
 
 public class MainControl extends Observable{
-	private String state;
+	private User user;
+	private ArrayList<Interference> interference = new ArrayList<>();
+	private ArrayList<Filter> filter = new ArrayList<>();
+	private Images images;
+	
 	
 	public MainControl(Observer... observers) {
 		for (Observer o : observers) {
 			this.addObserver(o);
 		}
-		for (int i = 0; i < 5; i++) {
-			setState("" + i);
-		}
-	}
-
-	public String getState() {
-		return state;
-	}
-
-	public void setState(final String state) {
-		this.state = state;
-		setChanged();
-		notifyObservers();
+		gameInit();
 	}
 	
 	public void gameInit(){
-		
+		this.user = new User("Alice");
+		interference.add(new Noise());
+		filter.add(new DeNoise());
 	}
 	
 	public void gameStart(){
+		
+	}
+	
+	public void gameEnd(){
 		
 	}
 	
@@ -69,10 +72,6 @@ public class MainControl extends Observable{
 	}
 	
 	public void randomCode(){
-		
-	}
-	
-	public void gameEnd(){
 		
 	}
 }
