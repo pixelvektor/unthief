@@ -27,4 +27,52 @@ public class MainControl extends Observable{
 		setChanged();
 		notifyObservers();
 	}
+	
+	public void gameInit(){
+		
+	}
+	
+	public void gameStart(){
+		
+	}
+	
+	public void codeAnalyse(){
+		
+	}
+	
+	public void useFilter(){
+		
+	}
+	
+	public void useInterference(){
+		
+	}
+	
+	public void play(){
+		
+	}
+	
+	public void checkFilter(){
+		
+	}
+
+	public void win(){
+		
+	}
+	
+	public void back(){
+		
+	}
+	
+	public void randomImage(){
+		
+	}
+	
+	public void randomCode(){
+		
+	}
+	
+	public void gameEnd(){
+		
+	}
 }
