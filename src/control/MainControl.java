@@ -16,7 +16,9 @@ public class MainControl extends Observable{
 	private ArrayList<Interference> interference = new ArrayList<>();
 	private ArrayList<Filter> filter = new ArrayList<>();
 	private Images images;
-	
+	/** true solange das Spiel laeuft. */
+	private boolean isRunning = true;
+
 	
 	public MainControl(Observer... observers) {
 		for (Observer o : observers) {
@@ -29,14 +31,19 @@ public class MainControl extends Observable{
 		this.user = new User("Alice");
 		interference.add(new Noise());
 		filter.add(new DeNoise());
+		randomImage();
+		randomCode();
+		codeAnalyse();
+		useInterference();
+		gameStart();
 	}
 	
 	public void gameStart(){
-		
+		play();
 	}
 	
 	public void gameEnd(){
-		
+		isRunning=false;
 	}
 	
 	public void codeAnalyse(){
@@ -52,11 +59,13 @@ public class MainControl extends Observable{
 	}
 	
 	public void play(){
-		
+		while(isRunning){
+			
+		}
 	}
 	
-	public void checkFilter(){
-		
+	public boolean checkFilter(){
+		return true;
 	}
 
 	public void win(){
