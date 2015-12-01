@@ -22,8 +22,8 @@ public class MainControl extends Observable{
 	private User user;
 	private ArrayList<Interference> interference = new ArrayList<>();
 	private ArrayList<Filter> filter = new ArrayList<>();
-	private ArrayList<BufferedImage> images = new ArrayList<>();
-	//private Images images;
+	
+	private Images images;
 	/** true solange das Spiel laeuft. */
 	private boolean isRunning = true;
 
@@ -39,8 +39,6 @@ public class MainControl extends Observable{
 		this.user = new User("Alice");
 		interference.add(new Noise());
 		filter.add(new DeNoise());
-		randomImage();
-		randomCode();
 		codeAnalyse();
 		useInterference();
 		gameStart();
@@ -81,26 +79,12 @@ public class MainControl extends Observable{
 	}
 	
 	public void back(){
-		if(images.size()>=2){
-			images.remove(images.size()-1);
+		if(images.getImage().size()>=2){
+			images.getImage().remove(images.getImage().size()-1);
 		}
 	}
 	
-	public void randomImage(){
-		try {
-			loadImage();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 	
-	public void loadImage() throws IOException{
-		BufferedImage image = ImageIO.read(new FileInputStream("res/pix/testbild.jpg"));
-		images.add(image);
-	}
 	
-	public void randomCode(){
-		
-	}
+	
 }
