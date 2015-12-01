@@ -10,6 +10,7 @@ import com.jogamp.openal.util.ALut;
 import control.MainControl;
 
 public class Audio3D implements Observer {
+	private static final String PATH = "res/audio/";
 	private MainControl subject;
 	static AL al;
 	static final int NUM_BUFFERS = 1;
@@ -41,7 +42,7 @@ public class Audio3D implements Observer {
             return AL.AL_FALSE;
 	        }
         ALut.alutLoadWAVFile(
-	            "C:/Users/Adrian/Desktop/zombie3.wav",
+	            PATH + "file01.wav",
 	            format,
 	            data,
 	            size,
