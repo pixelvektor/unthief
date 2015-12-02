@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
+import data.Code;
 import data.DeNoise;
 import data.Filter;
 import data.Image;
@@ -15,8 +16,8 @@ public class MainControl extends Observable{
 	private User user;
 	private ArrayList<Interference> interference = new ArrayList<>();
 	private ArrayList<Filter> filter = new ArrayList<>();
-	
 	private final Image image;
+	private final Code code;
 	/** true solange das Spiel laeuft. */
 	private boolean isRunning = true;
 
@@ -26,6 +27,7 @@ public class MainControl extends Observable{
 			this.addObserver(o);
 		}
 		image = new Image();
+		code = new Code();
 		gameInit();
 	}
 	

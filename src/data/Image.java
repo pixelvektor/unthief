@@ -9,23 +9,22 @@ import java.util.Collections;
 import javax.imageio.ImageIO;
 
 public class Image{
-	private ArrayList<String> fileList = new ArrayList<String>();
+	private final String file;
 	private ArrayList<BufferedImage> image = new ArrayList<>();
 	private static final String PATH = "res/images/";
 	
 	public Image(){
-		fileList = new FileLister(PATH).getFiles();
+		file = new FileLister(PATH, "jpg").getRandomFile();
 	}
 	
-	private String randomImage(){
-		Collections.shuffle(fileList);
-		return fileList.get(0);
+	public Image(final String path) {
+		file = new FileLister(path, "jpg").getRandomFile();
 	}
 	
 	private void loadImage(){
 		BufferedImage newImage = null;
 		try {
-			newImage = ImageIO.read(new FileInputStream(PATH + randomImage()));
+			newImage = ImageIO.read(new FileInputStream(PATH + file));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

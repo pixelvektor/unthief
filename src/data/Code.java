@@ -1,7 +1,9 @@
 package data;
 
-public class Code{
-	public void randomCode(){
-			
-		}
+public class Code extends Image{
+	private static final String PATH = "res/codes/";
+	
+	public Code() {
+		super(PATH);
+	}
 }
