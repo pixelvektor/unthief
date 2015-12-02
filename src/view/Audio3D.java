@@ -1,6 +1,8 @@
 package view;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.nio.ByteBuffer;
@@ -16,13 +18,10 @@ public class Audio3D implements Observer {
 	private static final String PATH = "res/audio/";
 	private MainControl subject;
 	static AL al;
-	static final int NUM_BUFFERS = 1;
-	static final int NUM_SOURCES = 1;
-    static final int SOUND1 = 0;
-    static int[] buffers = new int[NUM_BUFFERS];
-    static int[] sources = new int[NUM_SOURCES];
-    static float[] sourcePos1 = { 2.0f, 0.0f, -0.1f };
-    static float[] sourceVel1 = { -1.0f, 0.0f, 0.0f };
+    static int[] buffers;
+    static List sources = new ArrayList();
+    static float[] sourcePos = { 0.0f, 0.0f, 0.0f };
+    static float[] sourceVel = { 0.0f, 0.0f, 0.0f };
     static float[] listenerPos = { 0.0f, 0.0f, 0.0f };
     static float[] listenerVel = { 0.0f, 0.0f, 0.0f };
     static float[] listenerOri = { 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f };
@@ -40,38 +39,54 @@ public class Audio3D implements Observer {
         
         // load wav data into buffers
 
-        al.alGenBuffers(NUM_BUFFERS, buffers, 0);
+        al.alGenBuffers(fileList.size(), buffers, 0);
         if (al.alGetError() != AL.AL_NO_ERROR) {
             return AL.AL_FALSE;
 	        }
+        
+        for(int index = 0; index <= fileList.size()-1; index++){
         ALut.alutLoadWAVFile(
-	            PATH + fileList.get(0),
+	            PATH + fileList.get(index),
 	            format,
 	            data,
 	            size,
 	            freq,
 	            loop);
         al.alBufferData(
-            buffers[SOUND1],
+            buffers[index],
             format[0],
             data[0],
             size[0],
             freq[0]);
-       
-        al.alGenSources(NUM_SOURCES, sources, 0);
-    
-        al.alSourcei(sources[SOUND1], AL.AL_BUFFER, buffers[SOUND1]);
-        al.alSourcef(sources[SOUND1], AL.AL_PITCH, 1.0f);
-        al.alSourcef(sources[SOUND1], AL.AL_GAIN, 1.0f);
-        al.alSourcefv(sources[SOUND1], AL.AL_POSITION, sourcePos1, 0);
-        al.alSourcefv(sources[SOUND1], AL.AL_POSITION, sourceVel1, 0);
-        al.alSourcei(sources[SOUND1], AL.AL_LOOPING, AL.AL_FALSE);
+        }
         
         if (al.alGetError() != AL.AL_NO_ERROR) {
             return AL.AL_FALSE;
         }
 
         return AL.AL_TRUE;
+    }
+    
+    static void addSource(int type) {
+        int[] source = new int[1];
+
+        al.alGenSources(1, source, 0);
+
+        if (al.alGetError() != AL.AL_NO_ERROR) {
+            System.err.println("Error generating audio source.");
+            System.exit(1);
+        }
+
+        al.alSourcei (source[0], AL.AL_BUFFER,   buffers[type]);
+        al.alSourcef (source[0], AL.AL_PITCH,    1.0f         );
+        al.alSourcef (source[0], AL.AL_GAIN,     1.0f         );
+        al.alSourcefv(source[0], AL.AL_POSITION, sourcePos    , 0);
+        al.alSourcefv(source[0], AL.AL_VELOCITY, sourceVel    , 0);
+        al.alSourcei (source[0], AL.AL_LOOPING,  AL.AL_TRUE      );
+
+        al.alSourcePlay(source[0]);
+
+        sources.add(new Integer(source[0]));
     }
     
     static void setListenerValues() {
@@ -81,31 +96,44 @@ public class Audio3D implements Observer {
     }
 
     static void killAllData() {
-        al.alDeleteBuffers(NUM_BUFFERS, buffers, 0);
-        al.alDeleteSources(NUM_SOURCES, sources, 0);
+    	Iterator iter = sources.iterator();
+        while(iter.hasNext()) {
+            al.alDeleteSources(1, new int[] { ((Integer)iter.next()).intValue() }, 0);
+        }
+        sources.clear();
+        al.alDeleteBuffers(fileList.size()-1, buffers, 0);
         ALut.alutExit();
     }
     
     public Audio3D(){
     	fileList = new FileLister(PATH, "wav").getFiles();
+    	System.out.println(fileList.size()-1);
+    	System.out.println("blub1");
+    	buffers=new int[fileList.size()];
     	al = ALFactory.getAL();
         ALut.alutInit();
         al.alGetError();
-        
+        System.out.println("blub2");
         if(loadALData() == AL.AL_FALSE) {
+        	System.out.println("blub5");
             System.exit(1);    
         }
+        System.out.println("blub3");
         setListenerValues();
+        System.out.println("blub4");
+        for(int index = 0; index <= fileList.size()-1; index++){
+        	addSource(index);
+        }
         
-        play();
-        
+        //play();
+        System.out.println("blub");
         killAllData();
         
     }
         
 	private void play() {
 		// TODO Auto-generated method stub
-		al.alSourcePlay(SOUND1);
+		//al.alSourcePlay(SOUND1);
 	}
 
 	@Override
