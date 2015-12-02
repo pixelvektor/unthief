@@ -1,5 +1,6 @@
 package view;
 
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 import java.nio.ByteBuffer;
@@ -8,8 +9,10 @@ import com.jogamp.openal.ALFactory;
 import com.jogamp.openal.util.ALut;
 
 import control.MainControl;
+import data.FileLister;
 
 public class Audio3D implements Observer {
+	private static ArrayList<String> fileList = new ArrayList<String>();
 	private static final String PATH = "res/audio/";
 	private MainControl subject;
 	static AL al;
@@ -42,7 +45,7 @@ public class Audio3D implements Observer {
             return AL.AL_FALSE;
 	        }
         ALut.alutLoadWAVFile(
-	            PATH + "file01.wav",
+	            PATH + fileList.get(0),
 	            format,
 	            data,
 	            size,
@@ -84,6 +87,7 @@ public class Audio3D implements Observer {
     }
     
     public Audio3D(){
+    	fileList = new FileLister(PATH, "wav").getFiles();
     	al = ALFactory.getAL();
         ALut.alutInit();
         al.alGetError();
