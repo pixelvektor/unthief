@@ -19,8 +19,9 @@ public class Audio3D implements Observer {
 	private MainControl subject;
 	static AL al;
     static int[] buffers;
-    static List sources = new ArrayList();
-    static float[] sourcePos = { 0.0f, 0.0f, 0.0f };
+    static int[] sources;
+    static List<float[]> sourcePos= new ArrayList<float[]>();
+    static float[] sourcePosT = { 0.0f, 0.0f, 0.0f };
     static float[] sourceVel = { 0.0f, 0.0f, 0.0f };
     static float[] listenerPos = { 0.0f, 0.0f, 0.0f };
     static float[] listenerVel = { 0.0f, 0.0f, 0.0f };
@@ -68,25 +69,24 @@ public class Audio3D implements Observer {
     }
     
     static void addSource(int type) {
-        int[] source = new int[1];
 
-        al.alGenSources(1, source, 0);
+        al.alGenSources(1, sources, 0);
+        System.out.println("did");
 
         if (al.alGetError() != AL.AL_NO_ERROR) {
             System.err.println("Error generating audio source.");
             System.exit(1);
         }
 
-        al.alSourcei (source[0], AL.AL_BUFFER,   buffers[type]);
-        al.alSourcef (source[0], AL.AL_PITCH,    1.0f         );
-        al.alSourcef (source[0], AL.AL_GAIN,     1.0f         );
-        al.alSourcefv(source[0], AL.AL_POSITION, sourcePos    , 0);
-        al.alSourcefv(source[0], AL.AL_VELOCITY, sourceVel    , 0);
-        al.alSourcei (source[0], AL.AL_LOOPING,  AL.AL_TRUE      );
+        al.alSourcei (type, AL.AL_BUFFER,   buffers[type]);
+        al.alSourcef (type, AL.AL_PITCH,    1.0f         );
+        al.alSourcef (type, AL.AL_GAIN,     1.0f         );
+        al.alSourcefv(type, AL.AL_POSITION, sourcePos.get(type)    , 0);
+        al.alSourcefv(type, AL.AL_VELOCITY, sourceVel    , 0);
+        al.alSourcei (type, AL.AL_LOOPING,  AL.AL_TRUE      );
+        System.out.println(type+"test");
 
-        al.alSourcePlay(source[0]);
-
-        sources.add(new Integer(source[0]));
+        
     }
     
     static void setListenerValues() {
@@ -96,11 +96,9 @@ public class Audio3D implements Observer {
     }
 
     static void killAllData() {
-    	Iterator iter = sources.iterator();
-        while(iter.hasNext()) {
-            al.alDeleteSources(1, new int[] { ((Integer)iter.next()).intValue() }, 0);
+    	for(int index = 0; index <= fileList.size()-1; index++){
+            al.alDeleteSources(1,sources, 0);
         }
-        sources.clear();
         al.alDeleteBuffers(fileList.size()-1, buffers, 0);
         ALut.alutExit();
     }
@@ -108,29 +106,35 @@ public class Audio3D implements Observer {
     public Audio3D(){
     	fileList = new FileLister(PATH, "wav").getFiles();
     	System.out.println(fileList.size()-1);
-    	System.out.println("blub1");
     	buffers=new int[fileList.size()];
+    	sources=new int[fileList.size()];
+    	//System.out.println(sources[2]);
+    	randomSource();
     	al = ALFactory.getAL();
         ALut.alutInit();
         al.alGetError();
-        System.out.println("blub2");
         if(loadALData() == AL.AL_FALSE) {
-        	System.out.println("blub5");
             System.exit(1);    
         }
-        System.out.println("blub3");
         setListenerValues();
-        System.out.println("blub4");
         for(int index = 0; index <= fileList.size()-1; index++){
+        	System.out.println(index);
         	addSource(index);
         }
-        
+        al.alSourcePlay(sources[0]);
         //play();
         System.out.println("blub");
         killAllData();
         
     }
         
+	private void randomSource() {
+		for(int index = 0; index <= fileList.size()-1; index++){
+        	sourcePos.add(sourcePosT);
+        	System.out.println(sourcePos.get(index).toString());
+        }		
+	}
+
 	private void play() {
 		// TODO Auto-generated method stub
 		//al.alSourcePlay(SOUND1);
