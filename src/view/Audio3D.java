@@ -5,6 +5,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import com.jogamp.openal.AL;
 import com.jogamp.openal.ALFactory;
@@ -26,6 +29,7 @@ public class Audio3D implements Observer {
     static float[] listenerPos = { 0.0f, 0.0f, 0.0f };
     static float[] listenerVel = { 0.0f, 0.0f, 0.0f };
     static float[] listenerOri = { 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f };
+    boolean playing=true;
 
     
     static int loadALData() {
@@ -78,12 +82,12 @@ public class Audio3D implements Observer {
             System.exit(1);
         }
 
-        al.alSourcei (type, AL.AL_BUFFER,   buffers[type]);
-        al.alSourcef (type, AL.AL_PITCH,    1.0f         );
-        al.alSourcef (type, AL.AL_GAIN,     1.0f         );
-        al.alSourcefv(type, AL.AL_POSITION, sourcePos.get(type)    , 0);
-        al.alSourcefv(type, AL.AL_VELOCITY, sourceVel    , 0);
-        al.alSourcei (type, AL.AL_LOOPING,  AL.AL_TRUE      );
+        al.alSourcei (sources[type], AL.AL_BUFFER,   buffers[type]);
+        al.alSourcef (sources[type], AL.AL_PITCH,    1.0f         );
+        al.alSourcef (sources[type], AL.AL_GAIN,     1.0f         );
+        al.alSourcefv(sources[type], AL.AL_POSITION, sourcePos.get(type)    , 0);
+        al.alSourcefv(sources[type], AL.AL_VELOCITY, sourceVel    , 0);
+        al.alSourcei (sources[type], AL.AL_LOOPING,  AL.AL_FALSE      );
         System.out.println(type+"test");
 
         
@@ -121,11 +125,15 @@ public class Audio3D implements Observer {
         	System.out.println(index);
         	addSource(index);
         }
-        al.alSourcePlay(sources[0]);
-        //play();
-        System.out.println("blub");
-        killAllData();
-        
+
+    	   play();
+    	   long startTime = System.currentTimeMillis();
+	        long totalElapsed = 0;
+	      
+	        while (totalElapsed < 10000) {
+	        	totalElapsed = System.currentTimeMillis() - startTime;
+	        }
+       killAllData(); 
     }
         
 	private void randomSource() {
@@ -138,6 +146,8 @@ public class Audio3D implements Observer {
 	private void play() {
 		// TODO Auto-generated method stub
 		//al.alSourcePlay(SOUND1);
+        al.alSourcePlay(sources[0]);
+        //playing=false;
 	}
 
 	@Override
