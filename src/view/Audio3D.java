@@ -1,13 +1,10 @@
 package view;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.Random;
 import java.nio.ByteBuffer;
 import com.jogamp.openal.AL;
 import com.jogamp.openal.ALFactory;
@@ -25,7 +22,7 @@ public class Audio3D implements Observer {
     static int[] source;
     static List<float[]> sourcePos= new ArrayList<float[]>();
     static float[] sourcePosT = { 0.0f, 0.0f, 0.0f };
-    static float[] sourcePosTT = { 0.0f, 0.0f, 0.0f };
+    //static float[] sourcePosTT = { 0.0f, 0.0f, 0.0f };
     static float[] sourceVel = { 0.0f, 0.0f, 0.0f };
     static float[] listenerPos = { 0.0f, 0.0f, 0.0f };
     static float[] listenerVel = { 0.0f, 0.0f, 0.0f };
@@ -114,7 +111,9 @@ public class Audio3D implements Observer {
     	buffer=new int[fileList.size()];
     	source=new int[fileList.size()];
     	//System.out.println(sources[2]);
-    	randomSource();
+    	for(int index = 0; index <= fileList.size()-1; index++){
+        	sourcePos.add(randomSource());
+    	}
     	al = ALFactory.getAL();
         ALut.alutInit();
         al.alGetError();
@@ -137,13 +136,12 @@ public class Audio3D implements Observer {
        killAllData(); 
     }
         
-	private void randomSource() {
-		//for(int index = 0; index <= fileList.size()-1; index++){
-        	sourcePos.add(sourcePosT);
-        	sourcePos.add(sourcePosTT);
-        	System.out.println(sourcePos.get(0).toString());
-        	System.out.println(sourcePos.get(1).toString());
-        //}		
+	private float[] randomSource() {
+		float min=0.0f;
+		float max=5.0f;
+		Random rand=new Random();
+		float[] sourcePosTT= {rand.nextFloat()*(max-min)+min, rand.nextFloat()*(max-min)+min, rand.nextFloat()*(max-min)+min};
+		return sourcePosTT;
 	}
 
 	private void play() {
