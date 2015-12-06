@@ -130,10 +130,10 @@ public class Audio3D implements Observer {
     	   long startTime = System.currentTimeMillis();
 	        long totalElapsed = 0;
 	      
-	        while (totalElapsed < 10000) {
-	        	totalElapsed = System.currentTimeMillis() - startTime;
-	        }
-       killAllData(); 
+	        //while (totalElapsed < 10000) {
+	        //	totalElapsed = System.currentTimeMillis() - startTime;
+	        //}
+       //killAllData(); 
     }
         
 	private float[] randomSource() {
