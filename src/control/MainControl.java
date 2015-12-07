@@ -41,13 +41,14 @@ public class MainControl extends Observable{
 		testbild(image.getImage().get(image.getImage().size()-1));
 		this.user = new User("Alice");
 		Interference noise=new Noise(image.getImage().get(0));
-		filter.add(new DeNoise());
 		System.out.println(noise.getImage().hashCode());
 		image.getImage().add(noise.getImage());
 		testbild(image.getImage().get(0));
 		System.out.println(image.getImage().get(0).hashCode()+"wat?");
 		System.out.println(image.getImage().get(1).hashCode()+"wut?");
-		filter.add(new DeNoise());
+		Filter denoise=new DeNoise(image.getImage().get(0));
+		image.getImage().add(denoise.getImage());
+		testbild(image.getImage().get(0));
 		codeAnalyse();
 		useInterference();
 		gameStart();

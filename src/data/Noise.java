@@ -27,45 +27,40 @@ public class Noise extends Interference {
 	public Noise(BufferedImage image){
 		this.image=image;
 		//output=image;
-		gaussianNoise();
+		saltNPepperNoise();
 	}
 	
 	/**
 	 * Methode fuer Bildrauschen
 	 */
-	private void gaussianNoise() {
+	private void saltNPepperNoise() {
         //Raster source = image.getRaster();
         WritableRaster out = image.getRaster();
-         int currentValue;                    // the current value
-        double newValue;                  // the new "noisy" value
-        double gaussianNumber;                // gaussian number
         int bandsImage  = out.getNumBands(); // number of bands
         int widthImage  = image.getWidth();  // width of the image
         int heightImage = image.getHeight(); // height of the image
-        standardDeviation(widthImage,heightImage,bandsImage,out);
-        System.out.println(standardDeviation);
-        java.util.Random rand = new java.util.Random();
-       
-  
+        double impulseRatio=standardDeviation(widthImage,heightImage,bandsImage,out)/200.0d;
+        //java.util.Random rand = new java.util.Random();
+      
+        double rand;
+        double halfImpulseRatio = impulseRatio / 2.0;
+        java.util.Random randGen = new java.util.Random();
+          
         for (int height=0; height<heightImage; height++) {
-            for (int widght=0; widght<widthImage; widght++) {
-                gaussianNumber = rand.nextGaussian();
-                  
-                for (int bands=0; bands<bandsImage; bands++) {
-					newValue = standardDeviation * gaussianNumber;
-                    currentValue = out.getSample(widght, height, bands);
-                    newValue = newValue + currentValue;
-                    if (newValue < 0){   
-                    	newValue = 0.0;
+            for (int width=0; width<widthImage; width++) {
+                rand = randGen.nextDouble();
+                if (rand < halfImpulseRatio) {
+                    for (int band=0; band<bandsImage; band++){
+                    	out.setSample(width, height, band, 0);
                     }
-                    if (newValue > 255){ 
-                    	newValue = 255.0;
+                } else if (rand < impulseRatio) {
+                    for (int band=0; band<bandsImage; band++){
+                    	out.setSample(width, height, band, 255);
                     }
-                    out.setSample(widght, height, bands, (int)(newValue));
-                    
                 }
             }
         }
+
         
     }
 	
@@ -76,10 +71,10 @@ public class Noise extends Interference {
 	 * @param BandsImage Frequenz?
 	 * @param source Das Bild
 	 */
-	private void standardDeviation(double widthImage, double heightImage, double BandsImage, Raster source) {
+	private double standardDeviation(double widthImage, double heightImage, double BandsImage, Raster source) {
 		double exp;
 		standardDeviation=Math.sqrt((1/(widthImage*heightImage-1))*(analyseRaster(widthImage, heightImage, BandsImage, source, exp=2)-(1/(widthImage*heightImage))*Math.pow(analyseRaster(widthImage, heightImage, BandsImage, source, exp=1),2)));
-		System.out.println(standardDeviation);
+		return standardDeviation;
 	}
 	
 	/**
