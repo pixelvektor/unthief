@@ -1,8 +1,14 @@
 package control;
 
+import java.awt.FlowLayout;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 import data.Code;
 import data.DeNoise;
@@ -32,12 +38,28 @@ public class MainControl extends Observable{
 	}
 	
 	public void gameInit(){
+		testbild(image.getImage().get(image.getImage().size()-1));
 		this.user = new User("Alice");
-		//interference.add(new Noise());
-		//filter.add(new DeNoise());
+		Interference noise=new Noise(image.getImage().get(0));
+		filter.add(new DeNoise());
+		System.out.println(noise.getImage().hashCode());
+		image.getImage().add(noise.getImage());
+		testbild(image.getImage().get(0));
+		System.out.println(image.getImage().get(0).hashCode()+"wat?");
+		System.out.println(image.getImage().get(1).hashCode()+"wut?");
+		filter.add(new DeNoise());
 		codeAnalyse();
 		useInterference();
 		gameStart();
+	}
+	
+	public void testbild(BufferedImage images){
+		JFrame frame = new JFrame();
+		frame.getContentPane().setLayout(new FlowLayout());
+		frame.getContentPane().add(new JLabel(new ImageIcon(images)));
+		frame.pack();
+		frame.setVisible(true);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
 	public void gameStart(){
