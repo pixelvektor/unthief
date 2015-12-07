@@ -34,7 +34,6 @@ public class FileLister {
 		try {
 			Files.walk(Paths.get(path)).forEach(file -> {
 				if(Files.isRegularFile(file) && pm.matches(file)){
-					System.out.println(file.getFileName().toString());
 					files.add(file.getFileName().toString());
 				}
 			});
