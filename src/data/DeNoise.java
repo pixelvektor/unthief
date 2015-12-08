@@ -19,14 +19,15 @@ public class DeNoise extends Filter {
 		WritableRaster out = image.getRaster();
 		double widthImage=image.getWidth();
 		double heightImage=image.getHeight();
+		System.out.println("jo");
+		int edgex=Math.round(3/2);
+		int edgey=Math.round(3/2);
 		
-		double edgex=Math.round(3/2);
-		double edgey=Math.round(3/2);
-		for(double x=edgex; x<=widthImage-edgex;x++){
-			for(double y=edgey; y<=heightImage-edgey;y++){
+		for(int y=edgey; y<=heightImage-edgey;y++){
+			for(int x=edgex; x<=widthImage-edgex;x++){
 				int i=0;
-				for(double fx=0; fx<=3;fx++){
-					for(double fy=0; fy<=3;fy++){
+				for(double fy=0; fy<3;fy++){
+					for(double fx=0; fx<3;fx++){
 						int numPix;
 						if(y==1){
 							numPix=(int) x;
@@ -34,18 +35,29 @@ public class DeNoise extends Filter {
 						else{
 							numPix=(int) (((y-1)*widthImage)+x);
 						}
-						window[i]=image.getData().getDataBuffer().getElem(numPix);
+						//System.out.println(numPix);
+						window[i]=out.getDataBuffer().getElem(numPix);
+						System.out.println(out.getDataBuffer().getElem(numPix));
 						i=i+1;
 					}
 				}
-				for(int index=0;index<window.length;index++){
-					if(Arrays.asList(window).get(index).equals(255)){
-						out.getDataBuffer().setElem(index, average());
+				//for(int index=0;index<window.length;index++){
+					if(window[4]==255){
+						for (int band=0; band<out.getNumBands(); band++){
+	                    	out.setSample(x, y, band, average());
+	                    }
+						
 					}
-					if(Arrays.asList(window).get(index).equals(0)){						
-						out.getDataBuffer().setElem(index, average());
+					if(window[4]==0){						
+						for (int band=0; band<out.getNumBands(); band++){
+	                    	out.setSample(x, y, band, average());
+	                    }
 					}
-				}
+				//}
+				
+				window=new int[9];
+				
+				
 			}
 		}
 	}
@@ -55,6 +67,8 @@ public class DeNoise extends Filter {
 		for(int j=0;j<window.length;j++){
 			average=average+window[j];
 			}
+		average=average/9;
+		//System.out.println(average);
 		return average;
 	}
 	

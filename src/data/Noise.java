@@ -40,6 +40,7 @@ public class Noise extends Interference {
         int widthImage  = image.getWidth();  // width of the image
         int heightImage = image.getHeight(); // height of the image
         double impulseRatio=standardDeviation(widthImage,heightImage,bandsImage,out)/200.0d;
+        System.out.println(impulseRatio);
         //java.util.Random rand = new java.util.Random();
       
         double rand;
@@ -49,11 +50,11 @@ public class Noise extends Interference {
         for (int height=0; height<heightImage; height++) {
             for (int width=0; width<widthImage; width++) {
                 rand = randGen.nextDouble();
-                if (rand < halfImpulseRatio) {
+                if (rand > 0.8 && rand <=0.9) {
                     for (int band=0; band<bandsImage; band++){
                     	out.setSample(width, height, band, 0);
                     }
-                } else if (rand < impulseRatio) {
+                } else if (rand > 0.9) {
                     for (int band=0; band<bandsImage; band++){
                     	out.setSample(width, height, band, 255);
                     }
@@ -93,7 +94,7 @@ public class Noise extends Interference {
 			grey=(double) (grey+Math.pow(source.getDataBuffer().getElem(i),exp));
 			
 		}
-		System.out.println(grey);
+		//System.out.println(grey);
 		return grey;
 		
 	}            	
