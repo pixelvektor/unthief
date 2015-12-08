@@ -55,11 +55,11 @@ public class MainControl extends Observable{
 		
 		//System.out.println(image.getImage().get(1).hashCode()+"wut?");
 		
-		Filter denoise=new DeNoise(image.getImage().get(0));
+		Filter denoise=new DeNoise(noise.getImage());
 		
-		image.getImage().add(denoise.getImage());
+		//image.getImage().add(denoise.getImage());
 		
-		testbild(image.getImage().get(0));
+		testbild(denoise.getImage());
 		
 		codeAnalyse();
 		useInterference();
