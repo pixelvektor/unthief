@@ -17,11 +17,13 @@ public class Image{
 	
 	public Image(){
 		file = new FileLister(path, "jpg").getRandomFile();
+		loadImage();
 	}
 	
 	public Image(final String path) {
 		this.path = path;
 		file = new FileLister(path, "jpg").getRandomFile();
+		loadImage();
 	}
 	
 	/**
@@ -42,7 +44,6 @@ public class Image{
 	 * @return das Bild
 	 */
 	public ArrayList<BufferedImage> getImage(){
-		loadImage();
 		return image;
 	}
 }

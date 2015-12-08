@@ -33,7 +33,9 @@ public class MainControl extends Observable{
 			this.addObserver(o);
 		}
 		image = new Image();
+		System.out.println("image erstellt");
 		code = new Code();
+		System.out.println("code erstellt");
 		gameInit();
 	}
 	
