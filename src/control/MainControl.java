@@ -16,8 +16,10 @@ import data.Code;
 import data.DeNoise;
 import data.Filter;
 import data.Image;
+import data.IncreaseContrast;
 import data.Interference;
 import data.Noise;
+import data.ReducedContrast;
 import data.User;
 
 public class MainControl extends Observable{
@@ -45,23 +47,35 @@ public class MainControl extends Observable{
 		
 		this.user = new User("Alice");
 		
-		Interference noise=new Noise(copyImage(image.getImage().get(0)));
+		Interference reducedContrast= new ReducedContrast(copyImage(image.getImage().get(0)));
+		
+		image.getImage().add(reducedContrast.getImage());
+		
+		testbild(image.getImage().get(1));
+		
+		Filter increaseContrast= new IncreaseContrast(copyImage(image.getImage().get(1)));
+		
+		image.getImage().add(increaseContrast.getImage());
+		
+		testbild(image.getImage().get(2));
+		
+		Interference noise=new Noise(copyImage(image.getImage().get(2)));
 		
 		//System.out.println(noise.getImage().hashCode());
 		
 		image.getImage().add(noise.getImage());
 		
-		testbild(image.getImage().get(1));
+		testbild(image.getImage().get(3));
 		
 		//System.out.println(image.getImage().get(0).hashCode()+"wat?");
 		
 		//System.out.println(image.getImage().get(1).hashCode()+"wut?");
 		
-		Filter denoise=new DeNoise(copyImage(image.getImage().get(1)));
+		Filter denoise=new DeNoise(copyImage(image.getImage().get(3)));
 		
 		image.getImage().add(denoise.getImage());
 		
-		testbild(image.getImage().get(2));
+		testbild(image.getImage().get(4));
 		
 		codeAnalyse();
 		useInterference();
