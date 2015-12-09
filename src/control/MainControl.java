@@ -79,6 +79,8 @@ public class MainControl extends Observable{
 		
 		codeAnalyse();
 		useInterference();
+		setChanged();
+		notifyObservers(image.getImage().get(0));
 		gameStart();
 	}
 	
@@ -136,5 +138,10 @@ public class MainControl extends Observable{
 		if(image.getImage().size()>=2){
 			image.getImage().remove(image.getImage().size()-1);
 		}
+	}
+	
+	public BufferedImage getImage(){
+		return image.getImage().get(0);
+		
 	}
 }
