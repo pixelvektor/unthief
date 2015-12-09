@@ -2,6 +2,8 @@ package control;
 
 import java.awt.FlowLayout;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.WritableRaster;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
@@ -39,27 +41,27 @@ public class MainControl extends Observable{
 	}
 	
 	public void gameInit(){
-		//testbild(image.getImage().get(image.getImage().size()-1));
+		testbild(image.getImage().get(0));
 		
 		this.user = new User("Alice");
 		
-		Interference noise=new Noise(image.getImage().get(0));
+		Interference noise=new Noise(copyImage(image.getImage().get(0)));
 		
 		//System.out.println(noise.getImage().hashCode());
 		
 		image.getImage().add(noise.getImage());
 		
-		testbild(image.getImage().get(0));
+		testbild(image.getImage().get(1));
 		
 		//System.out.println(image.getImage().get(0).hashCode()+"wat?");
 		
 		//System.out.println(image.getImage().get(1).hashCode()+"wut?");
 		
-		Filter denoise=new DeNoise(noise.getImage());
+		Filter denoise=new DeNoise(copyImage(image.getImage().get(1)));
 		
-		//image.getImage().add(denoise.getImage());
+		image.getImage().add(denoise.getImage());
 		
-		testbild(denoise.getImage());
+		testbild(image.getImage().get(2));
 		
 		codeAnalyse();
 		useInterference();
@@ -94,6 +96,13 @@ public class MainControl extends Observable{
 	public void useInterference(){
 		
 	}
+	
+	static BufferedImage copyImage(BufferedImage image) {
+		 ColorModel colorModel = image.getColorModel();
+		 boolean isAlphaPremultiplied = colorModel.isAlphaPremultiplied();
+		 WritableRaster raster = image.copyData(null);
+		 return new BufferedImage(colorModel, raster, isAlphaPremultiplied, null);
+		}
 	
 	public void play(){
 		while(isRunning){
