@@ -14,14 +14,19 @@ import javax.media.j3d.Background;
 	import javax.media.j3d.BranchGroup;
 	import javax.media.j3d.Canvas3D;
 	import javax.media.j3d.DirectionalLight;
+import javax.media.j3d.ImageComponent;
+import javax.media.j3d.ImageComponent2D;
+import javax.media.j3d.Shape3D;
 import javax.media.j3d.TexCoordGeneration;
 import javax.media.j3d.Texture;
+import javax.media.j3d.Texture2D;
 import javax.media.j3d.TextureAttributes;
 import javax.media.j3d.Transform3D;
 	import javax.media.j3d.TransformGroup;
 import javax.swing.JFrame;
 	import javax.vecmath.Color3f;
-	import javax.vecmath.Point3d;
+import javax.vecmath.Color4f;
+import javax.vecmath.Point3d;
 	import javax.vecmath.Vector3f;
 import javax.vecmath.Vector4f;
 
@@ -38,6 +43,7 @@ import com.sun.j3d.utils.universe.SimpleUniverse;
 		private Canvas3D myCanvas;
 		private TransformGroup tgCamera;
 		BufferedImage image;
+		Shape3D shape;
 		
 //		public View3D() {
 //			
@@ -64,23 +70,41 @@ import com.sun.j3d.utils.universe.SimpleUniverse;
 			
 			SimpleUniverse universe = new SimpleUniverse(myCanvas);
 			universe.getViewingPlatform().setNominalViewingTransform();
-			
-			Texture texture= new TextureLoader(image).getTexture();
-			texture.setBoundaryModeS(Texture.WRAP);
-		    texture.setBoundaryModeT(Texture.WRAP);
+			int up= TextureLoader.Y_UP;
+			System.out.println(up);
+			TextureLoader loader= new TextureLoader(image,up);
+			//Texture texture = loader.getTexture();
+			int format = ImageComponent.FORMAT_RGB;
+			//ImageComponent2D twoD= new ImageComponent2D(format,image.getWidth(),image.getHeight());
+			//twoD.set(image);
+			ImageComponent2D image = loader.getImage();
+			Texture2D texture = new Texture2D(Texture.BASE_LEVEL, Texture.RGB,image.getWidth(), image.getHeight());
+			texture.setImage(0, image);
+			texture.setBoundaryModeS(Texture.CLAMP);
+		    texture.setBoundaryModeT(Texture.CLAMP);
+		    texture.setBoundaryColor(new Color4f(0.0f, 1.0f, 0.0f, 0.0f));
+		    System.out.println(image.getWidth());
+		    System.out.println(texture.getWidth());
+		    System.out.println(texture.getHeight());
 		    
 		    TextureAttributes texAttr = new TextureAttributes();
-		    texAttr.setTextureMode(TextureAttributes.DECAL);
+		    texAttr.setTextureMode(TextureAttributes.MODULATE);
+		    
 		    Appearance ap = new Appearance();
 		    ap.setTexture(texture);
 		    ap.setTextureAttributes(texAttr);
-		    int object = TexCoordGeneration.OBJECT_LINEAR;
-		    int twoD = TexCoordGeneration.TEXTURE_COORDINATE_2;
-		    //double[] coord=(-0.441,1.010, 1.299,0.0)
-		    //Vector4f planeS = Vector4f();
-		    //new TexCoordGeneration(object,);
-		    //ap.setTexCoordGeneration(new TexCoordGeneration().set);
-			createSceneGraph(universe);
+		    
+		    //int object = TexCoordGeneration.OBJECT_LINEAR;
+		    //int twoD = TexCoordGeneration.TEXTURE_COORDINATE_2;
+		    //float[] coord= new float[]{2.338f,-2.338f, 0.0f, 0.0f};
+		    //float[] coordT= new float[]{-2.338f,2.338f, 0.0f, 0.0f};
+		    //Vector4f planeS = new Vector4f(coord);
+		    //Vector4f planeT = new Vector4f(coordT);
+		    //new TexCoordGeneration(object,twoD,planeS,planeT);
+		    //ap.setTexCoordGeneration(new TexCoordGeneration(object,twoD,planeS,planeT));
+		    
+			createSceneGraph(universe, ap);
+			createSceneGraphD(universe, ap);
 			
 			createLights(universe);
 			
@@ -117,7 +141,7 @@ import com.sun.j3d.utils.universe.SimpleUniverse;
 			universe.addBranchGraph(lights);
 		}
 
-		private void createSceneGraph(SimpleUniverse universe)
+		private void createSceneGraph(SimpleUniverse universe, Appearance ap)
 		{
 			ObjectFile obj = new ObjectFile();
 			Scene loadedScene = null;
@@ -125,7 +149,7 @@ import com.sun.j3d.utils.universe.SimpleUniverse;
 			// Szene aus Datei einlesen
 			try
 			{
-				loadedScene = obj.load("res/obj/Kontrollpult.obj");
+				loadedScene = obj.load("res/obj/Body.obj");
 			} catch (FileNotFoundException | IncorrectFormatException
 					| ParsingErrorException e)
 			{
@@ -138,6 +162,37 @@ import com.sun.j3d.utils.universe.SimpleUniverse;
 			
 			// Objekt aus geladener Datei auslesen
 			BranchGroup theScene = loadedScene.getSceneGroup();
+			//shape = (Shape3D) theScene.getChild(0);
+			//shape.setAppearance(ap);
+			theScene.addChild(bg);
+			
+			
+			universe.addBranchGraph(theScene);
+		}
+		
+		private void createSceneGraphD(SimpleUniverse universe, Appearance ap)
+		{
+			ObjectFile obj = new ObjectFile();
+			Scene loadedScene = null;
+			
+			// Szene aus Datei einlesen
+			try
+			{
+				loadedScene = obj.load("res/obj/Display.obj");
+			} catch (FileNotFoundException | IncorrectFormatException
+					| ParsingErrorException e)
+			{
+				e.printStackTrace();
+			}
+			
+			Background bg = new Background(new Color3f(1.0f,1.0f,1.0f));
+			BoundingSphere bounds = new BoundingSphere(new Point3d(0.0,0.0,0.0), Double.MAX_VALUE);
+			bg.setApplicationBounds(bounds);
+			
+			// Objekt aus geladener Datei auslesen
+			BranchGroup theScene = loadedScene.getSceneGroup();
+			shape = (Shape3D) theScene.getChild(0);
+			shape.setAppearance(ap);
 			theScene.addChild(bg);
 			
 			
