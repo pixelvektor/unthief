@@ -1,7 +1,9 @@
 package data;
 
 
-import java.awt.image.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
 
 public class Noise extends Interference {
 	/** Name der Stoerung*/
@@ -68,7 +70,7 @@ public class Noise extends Interference {
 	/**
 	 * Methode zur Berechnung der Standardabweichung
 	 * @param widthImage Breite des Bildes
-	 * @param heightImage Höhe des Bildes
+	 * @param heightImage Hoehe des Bildes
 	 * @param BandsImage Frequenz?
 	 * @param source Das Bild
 	 */
@@ -81,7 +83,7 @@ public class Noise extends Interference {
 	/**
 	 * Berechnet die Grauwerte der Pixel
 	 * @param widthImage Breite des Bildes
-	 * @param heightImage Höhe des Bildes
+	 * @param heightImage Hoehe des Bildes
 	 * @param bandsImage Frequenz?
 	 * @param source Das Bild
 	 * @param exp Exponent
