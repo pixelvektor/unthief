@@ -5,6 +5,9 @@ import java.util.Observer;
 
 import control.MainControl;
 
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 
@@ -33,14 +36,17 @@ import com.sun.j3d.loaders.Scene;
 import com.sun.j3d.loaders.objectfile.ObjectFile;
 import com.sun.j3d.utils.behaviors.vp.OrbitBehavior;
 import com.sun.j3d.utils.image.TextureLoader;
+import com.sun.j3d.utils.picking.PickCanvas;
+import com.sun.j3d.utils.picking.PickResult;
 import com.sun.j3d.utils.universe.SimpleUniverse;
 
-public class View3D extends JFrame implements Observer{
+public class View3D extends MouseAdapter implements Observer {
 	private MainControl subject;
 	private Canvas3D myCanvas;
 	private TransformGroup tgCamera;
 	BufferedImage image;
 	Shape3D shape;
+	private PickCanvas pickCanvas;
 	
 
 	@Override
@@ -58,7 +64,8 @@ public class View3D extends JFrame implements Observer{
 	}
 	
 	public void init(){
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		JFrame frame=new JFrame();
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		myCanvas = new Canvas3D(SimpleUniverse.getPreferredConfiguration());
 		
@@ -82,6 +89,12 @@ public class View3D extends JFrame implements Observer{
 		createSceneGraph(universe, ap);
 		createSceneGraphD(universe, ap);
 		
+	    
+	    pickCanvas= new PickCanvas(myCanvas, createSceneGraphButton(universe, ap,"Button.obj"));
+		pickCanvas.setMode(PickCanvas.BOUNDS);
+		myCanvas.addMouseListener((MouseListener) this);
+	    
+		
 		createLights(universe);
 		
 		OrbitBehavior ob = new OrbitBehavior(myCanvas);
@@ -95,12 +108,11 @@ public class View3D extends JFrame implements Observer{
 		tgCamera = universe.getViewingPlatform().getViewPlatformTransform();
 		tgCamera.setTransform(tfCamera);
 		
-		setTitle("Object Loader Demo");
-		setSize(1280, 720);
+		frame.setTitle("Object Loader Demo");
+		frame.setSize(1280, 720);
+		frame.getContentPane().add("Center", myCanvas);
 		
-		getContentPane().add("Center", myCanvas);
-		
-		setVisible(true);
+		frame.setVisible(true);
 	}
 	
 	private void createLights(SimpleUniverse universe)
@@ -166,5 +178,56 @@ public class View3D extends JFrame implements Observer{
 		shape = (Shape3D) theScene.getChild(0);
 		shape.setAppearance(ap);
 		universe.addBranchGraph(theScene);
+		
+		
+	}
+	
+	private BranchGroup createSceneGraphButton(SimpleUniverse universe, Appearance ap,String name)
+	{
+		ObjectFile obj = new ObjectFile();
+		Scene loadedScene = null;
+		
+		// Szene aus Datei einlesen
+		try
+		{
+			loadedScene = obj.load("res/obj/"+name);
+		} catch (FileNotFoundException | IncorrectFormatException
+				| ParsingErrorException e)
+		{
+			e.printStackTrace();
+		}
+		// Objekt aus geladener Datei auslesen
+		BranchGroup theScene = loadedScene.getSceneGroup();
+		//shape = (Shape3D) theScene.getChild(0);
+		universe.addBranchGraph(theScene);
+		return theScene;
+		
+	}
+	
+	
+	public void mouseClicked(MouseEvent e)
+
+	{
+
+	    pickCanvas.setShapeLocation(e);
+
+	    PickResult result = pickCanvas.pickClosest();
+
+	    if (result == null) {
+
+	       System.out.println("Nothing picked");
+
+	    } else {
+
+	       Shape3D s = (Shape3D)result.getNode(PickResult.SHAPE3D);
+	       if(s !=null){
+		    	System.out.println("juhu!");
+		    	System.out.println(s.hashCode());
+		    }else{
+		    	System.out.println("ups!");
+		    }
+	    }
+	    
+
 	}
 }
