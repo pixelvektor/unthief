@@ -72,7 +72,7 @@ import com.sun.j3d.utils.universe.SimpleUniverse;
 			universe.getViewingPlatform().setNominalViewingTransform();
 			int up= TextureLoader.Y_UP;
 			System.out.println(up);
-			TextureLoader loader= new TextureLoader(image,up);
+			TextureLoader loader= new TextureLoader(image);
 			//Texture texture = loader.getTexture();
 			int format = ImageComponent.FORMAT_RGB;
 			//ImageComponent2D twoD= new ImageComponent2D(format,image.getWidth(),image.getHeight());
@@ -80,24 +80,28 @@ import com.sun.j3d.utils.universe.SimpleUniverse;
 			ImageComponent2D image = loader.getImage();
 			Texture2D texture = new Texture2D(Texture.BASE_LEVEL, Texture.RGB,image.getWidth(), image.getHeight());
 			texture.setImage(0, image);
-			texture.setBoundaryModeS(Texture.CLAMP);
-		    texture.setBoundaryModeT(Texture.CLAMP);
+			texture.setBoundaryModeS(Texture.CLAMP_TO_EDGE);
+		    texture.setBoundaryModeT(Texture.CLAMP_TO_EDGE);
 		    texture.setBoundaryColor(new Color4f(0.0f, 1.0f, 0.0f, 0.0f));
+		    
 		    System.out.println(image.getWidth());
 		    System.out.println(texture.getWidth());
 		    System.out.println(texture.getHeight());
-		    
+		    Transform3D transform = new Transform3D();
+		    transform.rotX(180);
 		    TextureAttributes texAttr = new TextureAttributes();
+		    //TextureAttributes.MODULATE,transform, new Color4f(0.0f,0.0f,0.0f,0.0f), TextureAttributes.ALLOW_TRANSFORM_WRITE
 		    texAttr.setTextureMode(TextureAttributes.MODULATE);
+		    //texAttr.setTextureTransform(transform);
 		    
 		    Appearance ap = new Appearance();
 		    ap.setTexture(texture);
 		    ap.setTextureAttributes(texAttr);
-		    
-		    //int object = TexCoordGeneration.OBJECT_LINEAR;
+		  
+		    //int object = TexCoordGeneration.EYE_LINEAR;
 		    //int twoD = TexCoordGeneration.TEXTURE_COORDINATE_2;
-		    //float[] coord= new float[]{2.338f,-2.338f, 0.0f, 0.0f};
-		    //float[] coordT= new float[]{-2.338f,2.338f, 0.0f, 0.0f};
+		    //float[] coordT= new float[]{-0.440730f,-1.009965f, 1.299243f, 0.0f};
+		    //float[] coord= new float[]{0.384715f,0.572089f, 1.452694f, 0.0f};
 		    //Vector4f planeS = new Vector4f(coord);
 		    //Vector4f planeT = new Vector4f(coordT);
 		    //new TexCoordGeneration(object,twoD,planeS,planeT);
@@ -178,7 +182,7 @@ import com.sun.j3d.utils.universe.SimpleUniverse;
 			// Szene aus Datei einlesen
 			try
 			{
-				loadedScene = obj.load("res/obj/Display.obj");
+				loadedScene = obj.load("res/obj/DisplayTest.obj");
 			} catch (FileNotFoundException | IncorrectFormatException
 					| ParsingErrorException e)
 			{
