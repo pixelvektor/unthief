@@ -22,6 +22,7 @@ import javax.media.j3d.Shape3D;
 import javax.media.j3d.Texture;
 import javax.media.j3d.Texture2D;
 import javax.media.j3d.TextureAttributes;
+import javax.media.j3d.TextureUnitState;
 import javax.media.j3d.Transform3D;
 import javax.media.j3d.TransformGroup;
 import javax.swing.JFrame;
@@ -47,6 +48,9 @@ public class View3D extends MouseAdapter implements Observer {
 	BufferedImage image;
 	Shape3D shape;
 	private PickCanvas pickCanvas;
+	int init=0;
+	Appearance ap = new Appearance();
+	TextureUnitState textureUnitState[] = new TextureUnitState[1];
 	
 
 	@Override
@@ -54,7 +58,21 @@ public class View3D extends MouseAdapter implements Observer {
 		if(subject==null)
 			subject = (MainControl) o;
 		image=(BufferedImage) arg;
-		init();
+		if(init==1){
+			TextureLoader loader= new TextureLoader(image);
+			ImageComponent2D image = loader.getImage();
+			Texture2D texture = new Texture2D(Texture.BASE_LEVEL, Texture.RGB,image.getWidth(), image.getHeight());
+			texture.setImage(0, image);
+			texture.setBoundaryModeS(Texture.CLAMP_TO_EDGE);
+		    texture.setBoundaryModeT(Texture.CLAMP_TO_EDGE);
+		    texture.setBoundaryColor(new Color4f(0.0f, 1.0f, 0.0f, 0.0f));
+			textureUnitState[0].setTexture(texture);
+		}
+		if(init==0){
+		  init();
+		  init++;
+		}
+		
 	}
 
 	
@@ -81,10 +99,12 @@ public class View3D extends MouseAdapter implements Observer {
 	    
 	    TextureAttributes texAttr = new TextureAttributes();
 	    texAttr.setTextureMode(TextureAttributes.MODULATE);
+	    textureUnitState[0]=new TextureUnitState(texture, texAttr, null);
+	    textureUnitState[0].setCapability(TextureUnitState.ALLOW_STATE_WRITE);
+	    ap.setTextureUnitState(textureUnitState);
+	    ap.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_READ );
+	    ap.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_WRITE );
 	    
-	    Appearance ap = new Appearance();
-	    ap.setTexture(texture);
-	    ap.setTextureAttributes(texAttr);
 	    
 		createSceneGraph(universe, ap);
 		createSceneGraphD(universe, ap);
@@ -198,7 +218,10 @@ public class View3D extends MouseAdapter implements Observer {
 		}
 		// Objekt aus geladener Datei auslesen
 		BranchGroup theScene = loadedScene.getSceneGroup();
-		//shape = (Shape3D) theScene.getChild(0);
+		for(int i=0;i<4;i++){
+		Shape3D shape = (Shape3D) theScene.getChild(i);
+		shape.setName("Button"+i);
+		}
 		universe.addBranchGraph(theScene);
 		return theScene;
 		
@@ -220,9 +243,12 @@ public class View3D extends MouseAdapter implements Observer {
 	    } else {
 
 	       Shape3D s = (Shape3D)result.getNode(PickResult.SHAPE3D);
+	       String name= result.getNode(PickResult.SHAPE3D).getName();
 	       if(s !=null){
 		    	System.out.println("juhu!");
+		    	System.out.println(name);
 		    	System.out.println(s.hashCode());
+		    	subject.clicked();
 		    }else{
 		    	System.out.println("ups!");
 		    }

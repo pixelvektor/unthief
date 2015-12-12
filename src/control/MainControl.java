@@ -31,6 +31,7 @@ public class MainControl extends Observable{
 	private final Code code;
 	/** true solange das Spiel laeuft. */
 	private boolean isRunning = true;
+	private boolean buttonClicked=false;
 
 	
 	public MainControl(Observer... observers) {
@@ -72,11 +73,11 @@ public class MainControl extends Observable{
 		
 		//System.out.println(image.getImage().get(1).hashCode()+"wut?");
 		
-		Filter denoise=new DeNoise(copyImage(image.getImage().get(3)));
+		//Filter denoise=new DeNoise(copyImage(image.getImage().get(3)));
 		
-		image.getImage().add(denoise.getImage());
+		//image.getImage().add(denoise.getImage());
 		
-		testbild(image.getImage().get(4));
+		//testbild(image.getImage().get(4));
 		
 		Interference blur = new Blur(copyImage(image.getImage().get(4)));
 		
@@ -100,7 +101,7 @@ public class MainControl extends Observable{
 	}
 	
 	public void gameStart(){
-		play();
+		
 	}
 	
 	public void gameEnd(){
@@ -127,9 +128,13 @@ public class MainControl extends Observable{
 		}
 	
 	public void play(){
-		while(isRunning){
-			isRunning = false;
-		}
+		System.out.println("clicked");
+		Filter denoise=new DeNoise(copyImage(image.getImage().get(3)));			
+		image.getImage().add(denoise.getImage());
+		setChanged();
+		notifyObservers(image.getImage().get(4));
+		//testbild(image.getImage().get(4));
+		isRunning = false;	
 	}
 	
 	public boolean checkFilter(){
@@ -138,6 +143,10 @@ public class MainControl extends Observable{
 
 	public void win(){
 		
+	}
+	
+	public void clicked(){
+		play();
 	}
 	
 	public void back(){
