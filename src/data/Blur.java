@@ -12,10 +12,7 @@ public class Blur extends Interference {
 	/** Das zu bearbeitende Bild*/
 	private BufferedImage image;
 	/** Blur Matrix*/
-	private final static float[] BLUR_MATRIX = {
-			0, 0, 0,
-			0.333f, 0.333f, 0.333f,
-			0, 0, 0};
+	private final static float[] BLUR_MATRIX = {0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f};
 	
 	/** Ctor fuer ein bild mit Blur.
 	 * @param image Das zu bearbeitende Bild
@@ -42,7 +39,7 @@ public class Blur extends Interference {
 	/** Wendet die Unschaerfe auf das Bild an. 
 	 */
 	private void blur() {
-		BufferedImageOp bio = new ConvolveOp(new Kernel(3, 3, BLUR_MATRIX));
-		image = bio.filter(image, image);
+		BufferedImageOp bio = new ConvolveOp(new Kernel(10, 1, BLUR_MATRIX));
+		image = bio.filter(image, null);
 	}
 }

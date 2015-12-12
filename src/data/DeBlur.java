@@ -1,8 +1,6 @@
 package data;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.WritableRaster;
-import java.util.Arrays;
 
 public class DeBlur extends Filter {
 	private BufferedImage image;

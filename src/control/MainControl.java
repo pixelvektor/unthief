@@ -12,6 +12,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import data.Blur;
 import data.Code;
 import data.DeNoise;
 import data.Filter;
@@ -76,6 +77,11 @@ public class MainControl extends Observable{
 		image.getImage().add(denoise.getImage());
 		
 		testbild(image.getImage().get(4));
+		
+		Interference blur = new Blur(copyImage(image.getImage().get(4)));
+		
+		image.getImage().add(blur.getImage());
+		testbild(image.getImage().get(5));
 		
 		codeAnalyse();
 		useInterference();
