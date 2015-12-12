@@ -248,7 +248,7 @@ public class View3D extends MouseAdapter implements Observer {
 		    	System.out.println("juhu!");
 		    	System.out.println(name);
 		    	System.out.println(s.hashCode());
-		    	subject.clicked();
+		    	subject.play(name);
 		    }else{
 		    	System.out.println("ups!");
 		    }

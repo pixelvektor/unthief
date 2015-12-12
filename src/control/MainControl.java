@@ -45,49 +45,11 @@ public class MainControl extends Observable{
 	}
 	
 	public void gameInit(){
-		testbild(image.getImage().get(0));
-		
 		this.user = new User("Alice");
-		
-		Interference reducedContrast= new ReducedContrast(copyImage(image.getImage().get(0)));
-		
-		image.getImage().add(reducedContrast.getImage());
-		
-		testbild(image.getImage().get(1));
-		
-		Filter increaseContrast= new IncreaseContrast(copyImage(image.getImage().get(1)));
-		
-		image.getImage().add(increaseContrast.getImage());
-		
-		testbild(image.getImage().get(2));
-		
-		Interference noise=new Noise(copyImage(image.getImage().get(2)));
-		
-		//System.out.println(noise.getImage().hashCode());
-		
-		image.getImage().add(noise.getImage());
-		
-		testbild(image.getImage().get(3));
-		
-		//System.out.println(image.getImage().get(0).hashCode()+"wat?");
-		
-		//System.out.println(image.getImage().get(1).hashCode()+"wut?");
-		
-		//Filter denoise=new DeNoise(copyImage(image.getImage().get(3)));
-		
-		//image.getImage().add(denoise.getImage());
-		
-		//testbild(image.getImage().get(4));
-		
-		Interference blur = new Blur(copyImage(image.getImage().get(4)));
-		
-		image.getImage().add(blur.getImage());
-		testbild(image.getImage().get(5));
-		
 		codeAnalyse();
 		useInterference();
 		setChanged();
-		notifyObservers(image.getImage().get(0));
+		notifyObservers(image.getImage().get(image.getImage().size()-1));
 		gameStart();
 	}
 	
@@ -117,7 +79,14 @@ public class MainControl extends Observable{
 	}
 	
 	public void useInterference(){
+		Interference reducedContrast= new ReducedContrast(copyImage(image.getImage().get(image.getImage().size()-1)));
+		image.getImage().add(reducedContrast.getImage());
 		
+		Interference noise=new Noise(copyImage(image.getImage().get(image.getImage().size()-1)));
+		image.getImage().add(noise.getImage());
+		
+		//Interference blur = new Blur(copyImage(image.getImage().get(image.getImage().size()-1)));
+		//image.getImage().add(blur.getImage());
 	}
 	
 	static BufferedImage copyImage(BufferedImage image) {
@@ -127,14 +96,22 @@ public class MainControl extends Observable{
 		 return new BufferedImage(colorModel, raster, isAlphaPremultiplied, null);
 		}
 	
-	public void play(){
+	public void play(String button){
 		System.out.println("clicked");
-		Filter denoise=new DeNoise(copyImage(image.getImage().get(3)));			
+		if(button.equals("Button2")){
+		Filter denoise=new DeNoise(copyImage(image.getImage().get(image.getImage().size()-1)));			
 		image.getImage().add(denoise.getImage());
+		}
+		
+		if(button.equals("Button1")){
+			Filter increaseContrast= new IncreaseContrast(copyImage(image.getImage().get(image.getImage().size()-1)));
+			image.getImage().add(increaseContrast.getImage());
+		}
+		if(button.equals("Button0")){
+			back();
+		}
 		setChanged();
-		notifyObservers(image.getImage().get(4));
-		//testbild(image.getImage().get(4));
-		isRunning = false;	
+		notifyObservers(image.getImage().get(image.getImage().size()-1));
 	}
 	
 	public boolean checkFilter(){
@@ -143,10 +120,6 @@ public class MainControl extends Observable{
 
 	public void win(){
 		
-	}
-	
-	public void clicked(){
-		play();
 	}
 	
 	public void back(){
