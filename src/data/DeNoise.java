@@ -74,5 +74,9 @@ public class DeNoise extends Filter {
 		return image;
 	}
 	
+	public int getID(){
+		return id;
+	}
+	
 	
 }

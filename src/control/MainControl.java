@@ -95,44 +95,50 @@ public class MainControl extends Observable{
 	
 	public void play(String button){
 		System.out.println("clicked");
-			if(button.equals("Button2")){
+			if(button.equals("2")){
 			Filter denoise=new DeNoise(copyImage(image.getImage().get(image.getImage().size()-1)));			
 			image.getImage().add(denoise.getImage());
 			right.add(checkFilter(denoise.getID()));
 			System.out.println(right.size()-2);
-			setChanged();
-			notifyObservers(right.get(right.size()-2));
+			if(right.size()>2){
+				setChanged();
+				notifyObservers(right.get(right.size()-2));
+			}
 			if(right.get(right.size()-2)==true){
-			setChanged();
-			notifyObservers(image.getImage().get(image.getImage().size()-1));
+				setChanged();
+				notifyObservers(image.getImage().get(image.getImage().size()-1));
 			}
 		}
 		
-		if(button.equals("Button1")){
+		if(button.equals("1")){
 			Filter increaseContrast= new IncreaseContrast(copyImage(image.getImage().get(image.getImage().size()-1)));
 			image.getImage().add(increaseContrast.getImage());
 			right.add(checkFilter(increaseContrast.getID()));
-			setChanged();
-			notifyObservers(right.get(right.size()-2));
+			if(right.size()>2){
+				setChanged();
+				notifyObservers(right.get(right.size()-2));
+			}
 			if(right.get(right.size()-2)==true){
 				setChanged();
 				notifyObservers(image.getImage().get(image.getImage().size()-1));
-				}
+			}
 		}
 		
-		if(button.equals("Button3")){
+		if(button.equals("3")){
 			Filter deBlur= new DeBlur(copyImage(image.getImage().get(image.getImage().size()-1)));
 			image.getImage().add(deBlur.getImage());
 			right.add(checkFilter(deBlur.getID()));
-			setChanged();
-			notifyObservers(right.get(right.size()-2));
+			if(right.size()>2){
+				setChanged();
+				notifyObservers(right.get(right.size()-2));
+			}
 			if(right.get(right.size()-2)==true){
 				setChanged();
 				notifyObservers(image.getImage().get(image.getImage().size()-1));
-				}
+			}
 		}
 		
-		if(button.equals("Button0")){
+		if(button.equals("0")){
 			back();
 			setChanged();
 			notifyObservers(image.getImage().get(image.getImage().size()-1));
@@ -143,7 +149,9 @@ public class MainControl extends Observable{
 		System.out.println(image.getImage().size());
 		for(int index=0; index<3;index++){
 			if(image.getImage().size()-4==index){
-				if(order[2]==id){
+				System.out.println(order[2-index]+"bla");
+				System.out.println(id);
+				if(order[2-index]==id){
 					System.out.println("testBestanden");
 					return true;
 				}else{
@@ -168,7 +176,7 @@ public class MainControl extends Observable{
 		right.clear();
 		right.add(true);
 		setChanged();
-		notifyObservers(true);
+		notifyObservers("back");
 	}
 	
 	public BufferedImage getImage(){

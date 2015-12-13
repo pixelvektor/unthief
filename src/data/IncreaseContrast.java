@@ -8,7 +8,7 @@ public class IncreaseContrast extends Filter{
 	private BufferedImage image;
 	float scaleFactor = 2.0f;
     float offset = 0;
-    private int id=2;
+    private int id=5;
 	
 	public IncreaseContrast(BufferedImage image){
 		this.image=image;
@@ -21,10 +21,14 @@ public class IncreaseContrast extends Filter{
 	    }
 	 
 	 /**
-		 * Getter fuer das bearbeitete Bild
-		 * @return Das bearbeitete Bild
-		 */
-		public BufferedImage getImage(){
-			return image;
-		}
+	 * Getter fuer das bearbeitete Bild
+	 * @return Das bearbeitete Bild
+	 */
+	public BufferedImage getImage(){
+		return image;
+	}
+	
+	public int getID(){
+		return id;
+	}
 }

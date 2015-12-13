@@ -1,5 +1,6 @@
 package view;
 
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -46,14 +47,18 @@ public class View3D extends MouseAdapter implements Observer {
 	private MainControl subject;
 	private Canvas3D myCanvas;
 	private TransformGroup tgCamera;
-	BufferedImage image;
-	Shape3D shape;
-	Shape3D shapeW;
+	private BufferedImage image;
+	private Shape3D shape;
 	private PickCanvas pickCanvas;
-	int init=0;
-	Appearance ap = new Appearance();
-	Appearance attention = new Appearance();
-	TextureUnitState textureUnitState[] = new TextureUnitState[1];
+	private int init=0;
+	private Appearance ap = new Appearance();
+	private Appearance unClicked = new Appearance();
+	private Appearance clicked = new Appearance();
+	private Appearance right = new Appearance();
+	private Appearance wrong = new Appearance();
+	private TextureUnitState textureUnitState[] = new TextureUnitState[1];
+	private BranchGroup buttons;
+	private ArrayList<Integer> buttonClicked= new ArrayList<Integer>();
 
 	@Override
 	public void update(final Observable o, final Object arg) {
@@ -70,28 +75,36 @@ public class View3D extends MouseAdapter implements Observer {
 			    texture.setBoundaryModeT(Texture.CLAMP_TO_EDGE);
 			    texture.setBoundaryColor(new Color4f(0.0f, 1.0f, 0.0f, 0.0f));
 				textureUnitState[0].setTexture(texture);
+				System.out.println(buttons.getChild(buttonClicked.get(buttonClicked.size()-1)).getName()+"but");
+				if(!buttons.getChild(buttonClicked.get(buttonClicked.size()-1)).getName().equals("0")){
+					Shape3D button=(Shape3D) buttons.getChild(buttonClicked.get(buttonClicked.size()-1));
+					button.setAppearance(clicked);
+				}
 			}
 			if(init==0){
 				image=(BufferedImage) arg;
 				init();
 				init++;
 			}
-		}else{
-			System.out.println("möööööp");
-			Boolean right=(Boolean) arg;
-			if(right==false){
+		}else if(arg instanceof Boolean){
+			Boolean check=(Boolean) arg;
+			if(check==false){
 				System.out.println("möööööp");
-				Appearance ap = new Appearance();
-				Color3f col = new Color3f(1.0f, 0.0f, 0.0f);
-				ColoringAttributes ca = new ColoringAttributes(col, ColoringAttributes.NICEST);
-				ap.setColoringAttributes(ca);
-				shapeW.setAppearance(ap);
+				if(!buttons.getChild(buttonClicked.get(buttonClicked.size()-1)).getName().equals("0")){
+					Shape3D button=(Shape3D) buttons.getChild(buttonClicked.get(buttonClicked.size()-2));
+					button.setAppearance(wrong);
+				}
 			}else{
-				Appearance ap = new Appearance();
-				Color3f col = new Color3f(1.0f, 1.0f, 1.0f);
-				ColoringAttributes ca = new ColoringAttributes(col, ColoringAttributes.NICEST);
-				ap.setColoringAttributes(ca);
-				shapeW.setAppearance(ap);
+				if(!buttons.getChild(buttonClicked.get(buttonClicked.size()-1)).getName().equals("0")){
+					Shape3D button=(Shape3D) buttons.getChild(buttonClicked.get(buttonClicked.size()-2));
+					button.setAppearance(right);
+				}
+			}
+		}else if(arg instanceof String){
+			String message=(String) arg;
+			if(message.equals("back")){
+				Shape3D button=(Shape3D) buttons.getChild(buttonClicked.get(buttonClicked.size()-3));
+				button.setAppearance(unClicked);
 			}
 		}
 		
@@ -111,14 +124,14 @@ public class View3D extends MouseAdapter implements Observer {
 		
 		SimpleUniverse universe = new SimpleUniverse(myCanvas);
 		universe.getViewingPlatform().setNominalViewingTransform();
+		
 		TextureLoader loader= new TextureLoader(image);
 		ImageComponent2D image = loader.getImage();
 		Texture2D texture = new Texture2D(Texture.BASE_LEVEL, Texture.RGB,image.getWidth(), image.getHeight());
 		texture.setImage(0, image);
 		texture.setBoundaryModeS(Texture.CLAMP_TO_EDGE);
 	    texture.setBoundaryModeT(Texture.CLAMP_TO_EDGE);
-	    texture.setBoundaryColor(new Color4f(0.0f, 1.0f, 0.0f, 0.0f));
-	    
+	    texture.setBoundaryColor(new Color4f(0.0f, 1.0f, 0.0f, 0.0f)); 
 	    TextureAttributes texAttr = new TextureAttributes();
 	    texAttr.setTextureMode(TextureAttributes.MODULATE);
 	    textureUnitState[0]=new TextureUnitState(texture, texAttr, null);
@@ -127,13 +140,36 @@ public class View3D extends MouseAdapter implements Observer {
 	    ap.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_READ );
 	    ap.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_WRITE );
 	    
+	    Color3f colClicked = new Color3f(1.0f, 1.0f, 1.0f);
+		ColoringAttributes colAtClicked = new ColoringAttributes(colClicked, ColoringAttributes.NICEST);
+		clicked.setColoringAttributes(colAtClicked);
+	    clicked.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_READ );
+	    clicked.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_WRITE );
+	    
+	    Color3f colUnClicked = new Color3f(0.2f, 0.2f, 0.2f);
+		ColoringAttributes colAtUnClicked = new ColoringAttributes(colUnClicked, ColoringAttributes.NICEST);
+		unClicked.setColoringAttributes(colAtUnClicked);
+		unClicked.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_READ );
+		unClicked.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_WRITE );
+	    
+	    Color3f colRight = new Color3f(0.0f, 1.0f, 0.0f);
+		ColoringAttributes colAtRight = new ColoringAttributes(colRight, ColoringAttributes.NICEST);
+		right.setColoringAttributes(colAtRight);
+	    right.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_READ );
+	    right.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_WRITE );
+	    
+	    Color3f colWrong = new Color3f(1.0f, 0.0f, 0.0f);
+		ColoringAttributes colAtWrong = new ColoringAttributes(colWrong, ColoringAttributes.NICEST);
+		wrong.setColoringAttributes(colAtWrong);
+	    wrong.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_READ );
+	    wrong.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_WRITE );
 	    
 		createSceneGraph(universe);
 		createSceneGraphD(universe);
-		createSceneGraphWarnung(universe);
+		buttons=createSceneGraphButton(universe,"Button.obj");
 		
 	    
-	    pickCanvas= new PickCanvas(myCanvas, createSceneGraphButton(universe,"Button.obj"));
+	    pickCanvas= new PickCanvas(myCanvas, buttons);
 		pickCanvas.setMode(PickCanvas.BOUNDS);
 		myCanvas.addMouseListener((MouseListener) this);
 	    
@@ -156,36 +192,6 @@ public class View3D extends MouseAdapter implements Observer {
 		frame.getContentPane().add("Center", myCanvas);
 		
 		frame.setVisible(true);
-	}
-	
-	private void createSceneGraphWarnung(SimpleUniverse universe) {
-		ObjectFile obj = new ObjectFile();
-		Scene loadedScene = null;
-		
-		// Szene aus Datei einlesen
-		try
-		{
-			loadedScene = obj.load("res/obj/Warnlicht.obj");
-		} catch (FileNotFoundException | IncorrectFormatException
-				| ParsingErrorException e)
-		{
-			e.printStackTrace();
-		}
-		
-		
-		Color3f col = new Color3f(1.0f, 1.0f, 1.0f);
-		ColoringAttributes ca = new ColoringAttributes(col, ColoringAttributes.NICEST);
-		attention.setColoringAttributes(ca);
-	    attention.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_READ );
-	    attention.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_WRITE );
-		// Objekt aus geladener Datei auslesen
-		BranchGroup theScene = loadedScene.getSceneGroup();
-		shapeW = (Shape3D) theScene.getChild(0);
-		shapeW.setCapability(shapeW.ALLOW_APPEARANCE_WRITE);
-		shapeW.setAppearance(attention);
-		System.out.println(shapeW.getAppearanceOverrideEnable());
-		universe.addBranchGraph(theScene);
-		
 	}
 
 
@@ -274,7 +280,9 @@ public class View3D extends MouseAdapter implements Observer {
 		BranchGroup theScene = loadedScene.getSceneGroup();
 		for(int i=0;i<4;i++){
 		Shape3D shape = (Shape3D) theScene.getChild(i);
-		shape.setName("Button"+i);
+		shape.setName(Integer.toString(i));
+		shape.setAppearance(unClicked);
+		shape.setCapability(shape.ALLOW_APPEARANCE_WRITE);
 		}
 		universe.addBranchGraph(theScene);
 		return theScene;
@@ -298,6 +306,7 @@ public class View3D extends MouseAdapter implements Observer {
 
 	       Shape3D s = (Shape3D)result.getNode(PickResult.SHAPE3D);
 	       String name= result.getNode(PickResult.SHAPE3D).getName();
+	       buttonClicked.add(Integer.parseInt(name));
 	       if(s !=null){
 		    	subject.play(name);
 		    }else{
