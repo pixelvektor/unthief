@@ -57,7 +57,7 @@ public class View3D extends MouseAdapter implements Observer {
 	private Shape3D shape;
 	private PickCanvas pickCanvas;
 	private int init=0;
-	private Appearance ap = new Appearance();
+	private Appearance display = new Appearance();
 	private Appearance unClicked = new Appearance();
 	private Appearance clicked = new Appearance();
 	private Appearance right = new Appearance();
@@ -66,6 +66,9 @@ public class View3D extends MouseAdapter implements Observer {
 	private BranchGroup buttons;
 	private ArrayList<Integer> buttonClicked= new ArrayList<Integer>();
 	private Boolean win=false;
+	private boolean active1=true;
+	private boolean active2=true;
+	private boolean active3=true;
 
 	@Override
 	public void update(final Observable o, final Object arg) {
@@ -75,14 +78,14 @@ public class View3D extends MouseAdapter implements Observer {
 			if(init==1){
 				image=(BufferedImage) arg;
 				TextureLoader loader= new TextureLoader(image);
-				ImageComponent2D image = loader.getImage();
-				Texture2D texture = new Texture2D(Texture.BASE_LEVEL, Texture.RGB,image.getWidth(), image.getHeight());
-				texture.setImage(0, image);
+				ImageComponent2D texImage = loader.getImage();
+				Texture2D texture = new Texture2D(Texture.BASE_LEVEL, Texture.RGB,texImage.getWidth(), texImage.getHeight());
+				texture.setImage(0, texImage);
 				texture.setBoundaryModeS(Texture.CLAMP_TO_EDGE);
 			    texture.setBoundaryModeT(Texture.CLAMP_TO_EDGE);
 			    texture.setBoundaryColor(new Color4f(0.0f, 1.0f, 0.0f, 0.0f));
 				textureUnitState[0].setTexture(texture);
-				System.out.println(buttons.getChild(buttonClicked.get(buttonClicked.size()-1)).getName()+"but");
+				
 				if(!buttons.getChild(buttonClicked.get(buttonClicked.size()-1)).getName().equals("0")){
 					Shape3D button=(Shape3D) buttons.getChild(buttonClicked.get(buttonClicked.size()-1));
 					button.setAppearance(clicked);
@@ -105,6 +108,7 @@ public class View3D extends MouseAdapter implements Observer {
 				if(!buttons.getChild(buttonClicked.get(buttonClicked.size()-1)).getName().equals("0")){
 					Shape3D button=(Shape3D) buttons.getChild(buttonClicked.get(buttonClicked.size()-2));
 					button.setAppearance(right);
+					setActive(Integer.parseInt(buttons.getChild(buttonClicked.get(buttonClicked.size()-2)).getName()), false);
 				}
 			}
 		}else if(arg instanceof String){
@@ -121,7 +125,6 @@ public class View3D extends MouseAdapter implements Observer {
 		}
 		
 	}
-
 	
 	private void win() {
 		win=true;
@@ -131,18 +134,14 @@ public class View3D extends MouseAdapter implements Observer {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		JFrame frame = new JFrame();
-		frame.getContentPane().setLayout(new FlowLayout());
-		frame.getContentPane().add(new JLabel(new ImageIcon(win)));
-		frame.pack();
-		frame.setVisible(true);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	}
-
-
-	public View3D(){
-		
-		
+		JFrame winFrame = new JFrame();
+		winFrame.setTitle("Win");
+		winFrame.setSize(1280, 720);
+		winFrame.getContentPane().setLayout(new FlowLayout());
+		winFrame.getContentPane().add(new JLabel(new ImageIcon(win)));
+		winFrame.pack();
+		winFrame.setVisible(true);
+		winFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
 	public void init(){
@@ -165,9 +164,9 @@ public class View3D extends MouseAdapter implements Observer {
 	    texAttr.setTextureMode(TextureAttributes.MODULATE);
 	    textureUnitState[0]=new TextureUnitState(texture, texAttr, null);
 	    textureUnitState[0].setCapability(TextureUnitState.ALLOW_STATE_WRITE);
-	    ap.setTextureUnitState(textureUnitState);
-	    ap.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_READ );
-	    ap.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_WRITE );
+	    display.setTextureUnitState(textureUnitState);
+	    display.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_READ );
+	    display.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_WRITE );
 	    
 	    Color3f colClicked = new Color3f(1.0f, 1.0f, 1.0f);
 		ColoringAttributes colAtClicked = new ColoringAttributes(colClicked, ColoringAttributes.NICEST);
@@ -194,15 +193,13 @@ public class View3D extends MouseAdapter implements Observer {
 	    wrong.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_WRITE );
 	    
 		createSceneGraph(universe);
-		createSceneGraphD(universe);
+		createSceneGraphDisplay(universe);
 		buttons=createSceneGraphButton(universe,"Button.obj");
 		
-	    
 	    pickCanvas= new PickCanvas(myCanvas, buttons);
 		pickCanvas.setMode(PickCanvas.BOUNDS);
 		myCanvas.addMouseListener((MouseListener) this);
 	    
-		
 		createLights(universe);
 		
 		OrbitBehavior ob = new OrbitBehavior(myCanvas);
@@ -216,7 +213,7 @@ public class View3D extends MouseAdapter implements Observer {
 		tgCamera = universe.getViewingPlatform().getViewPlatformTransform();
 		tgCamera.setTransform(tfCamera);
 		
-		frame.setTitle("Object Loader Demo");
+		frame.setTitle("Unthief");
 		frame.setSize(1280, 720);
 		frame.getContentPane().add("Center", myCanvas);
 		
@@ -224,8 +221,7 @@ public class View3D extends MouseAdapter implements Observer {
 	}
 
 
-	private void createLights(SimpleUniverse universe)
-	{
+	private void createLights(SimpleUniverse universe){
 		BoundingSphere bounds = new BoundingSphere(new Point3d(0.0, 0.0, 0.0), Double.MAX_VALUE);
 		Color3f lightColor = new Color3f(0.7f, 0.7f, 0.7f);
 		Point3f lightDirection = new Point3f(0.0f, 0.9f, 1.5f);
@@ -234,12 +230,10 @@ public class View3D extends MouseAdapter implements Observer {
 		
 		BranchGroup lights = new BranchGroup();
 		lights.addChild(dLight);
-		
 		universe.addBranchGraph(lights);
 	}
 
-	private void createSceneGraph(SimpleUniverse universe)
-	{
+	private void createSceneGraph(SimpleUniverse universe){
 		ObjectFile obj = new ObjectFile();
 		Scene loadedScene = null;
 		
@@ -260,13 +254,10 @@ public class View3D extends MouseAdapter implements Observer {
 		// Objekt aus geladener Datei auslesen
 		BranchGroup theScene = loadedScene.getSceneGroup();
 		theScene.addChild(bg);
-		
-		
 		universe.addBranchGraph(theScene);
 	}
 	
-	private void createSceneGraphD(SimpleUniverse universe)
-	{
+	private void createSceneGraphDisplay(SimpleUniverse universe){
 		ObjectFile obj = new ObjectFile();
 		Scene loadedScene = null;
 		
@@ -279,20 +270,14 @@ public class View3D extends MouseAdapter implements Observer {
 		{
 			e.printStackTrace();
 		}
-		
-		
-		
 		// Objekt aus geladener Datei auslesen
 		BranchGroup theScene = loadedScene.getSceneGroup();
 		shape = (Shape3D) theScene.getChild(0);
-		shape.setAppearance(ap);
-		universe.addBranchGraph(theScene);
-		
-		
+		shape.setAppearance(display);
+		universe.addBranchGraph(theScene);		
 	}
 	
-	private BranchGroup createSceneGraphButton(SimpleUniverse universe, String name)
-	{
+	private BranchGroup createSceneGraphButton(SimpleUniverse universe, String name){
 		ObjectFile obj = new ObjectFile();
 		Scene loadedScene = null;
 		
@@ -314,10 +299,8 @@ public class View3D extends MouseAdapter implements Observer {
 		shape.setCapability(shape.ALLOW_APPEARANCE_WRITE);
 		}
 		universe.addBranchGraph(theScene);
-		return theScene;
-		
+		return theScene;		
 	}
-	
 	
 	public void mouseClicked(MouseEvent e){
 		if(win==false){
@@ -328,13 +311,47 @@ public class View3D extends MouseAdapter implements Observer {
 		    }else{
 		       Shape3D s = (Shape3D)result.getNode(PickResult.SHAPE3D);
 		       String name= result.getNode(PickResult.SHAPE3D).getName();
-		       buttonClicked.add(Integer.parseInt(name));
-		       if(s !=null){
-			    	subject.play(name);
-			    }else{
-			    	System.out.println("ups!");
-			    }
+		       if(getActive(Integer.parseInt(name))){
+			       if(!name.equals("0")){
+			    	   buttonClicked.add(Integer.parseInt(name));
+			       }
+			       if(s !=null){
+				    	subject.play(name);
+				    }else{
+				    	System.out.println("ups!");
+				    }
+		       }
 		    }   
 		}
+	}
+	
+	private void setActive(int id,boolean lever) {
+		if(id==1){
+			active1=lever;
+		}
+		
+		if(id==2){
+			active2=lever;
+		}
+		
+		if(id==3){
+			active3=lever;
+			System.out.println(active3);
+		}
+	}
+	
+	private boolean getActive(int id) {
+		if(id==1){
+			return active1;
+		}
+		
+		if(id==2){
+			return active2;
+		}
+		
+		if(id==3){
+			return active3;
+		}
+		return true;
 	}
 }

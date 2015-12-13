@@ -35,6 +35,9 @@ public class MainControl extends Observable{
 	private int order[];
 	private ArrayList<Boolean> right= new ArrayList<>();
 	private int green=0;
+	private boolean active1=true;
+	private boolean active2=true;
+	private boolean active3=true;
 
 	
 	public MainControl(Observer... observers) {
@@ -88,7 +91,7 @@ public class MainControl extends Observable{
 		}
 	}
 	
-	static BufferedImage copyImage(BufferedImage image) {
+	static BufferedImage copyImage(BufferedImage image){
 		 ColorModel colorModel = image.getColorModel();
 		 boolean isAlphaPremultiplied = colorModel.isAlphaPremultiplied();
 		 WritableRaster raster = image.copyData(null);
@@ -96,50 +99,52 @@ public class MainControl extends Observable{
 		}
 	
 	public void play(String button){
-		System.out.println(green+"g");
-			if(button.equals("2")){
-			Filter denoise=new DeNoise(copyImage(image.getImage().get(image.getImage().size()-1)));			
-			image.getImage().add(denoise.getImage());
-			right.add(checkFilter(denoise.getID()));
-			System.out.println(right.size()-2);
-			if(right.size()>2){
-				setChanged();
-				notifyObservers(right.get(right.size()-2));
-			}
-			if(right.get(right.size()-2)==true){
-				setChanged();
-				notifyObservers(image.getImage().get(image.getImage().size()-1));
-				green=green+1;
+		if(button.equals("2")){
+			if(active2==true){
+				Filter denoise=new DeNoise(copyImage(image.getImage().get(image.getImage().size()-1)));			
+				image.getImage().add(denoise.getImage());
+				right.add(checkFilter(denoise.getID()));
+				System.out.println(right.size()-2);
+				if(right.size()>2){
+					setChanged();
+					notifyObservers(right.get(right.size()-2));
+				}
+				if(right.get(right.size()-2)==true){
+					setChanged();
+					notifyObservers(image.getImage().get(image.getImage().size()-1));
+				}
 			}
 		}
 		
 		if(button.equals("1")){
-			Filter increaseContrast= new IncreaseContrast(copyImage(image.getImage().get(image.getImage().size()-1)));
-			image.getImage().add(increaseContrast.getImage());
-			right.add(checkFilter(increaseContrast.getID()));
-			if(right.size()>2){
-				setChanged();
-				notifyObservers(right.get(right.size()-2));
-			}
-			if(right.get(right.size()-2)==true){
-				setChanged();
-				notifyObservers(image.getImage().get(image.getImage().size()-1));
-				green=green+1;
+			if(active1==true){
+				Filter increaseContrast= new IncreaseContrast(copyImage(image.getImage().get(image.getImage().size()-1)));
+				image.getImage().add(increaseContrast.getImage());
+				right.add(checkFilter(increaseContrast.getID()));
+				if(right.size()>2){
+					setChanged();
+					notifyObservers(right.get(right.size()-2));
+				}
+				if(right.get(right.size()-2)==true){
+					setChanged();
+					notifyObservers(image.getImage().get(image.getImage().size()-1));
+				}
 			}
 		}
 		
 		if(button.equals("3")){
-			Filter deBlur= new DeBlur(copyImage(image.getImage().get(image.getImage().size()-1)));
-			image.getImage().add(deBlur.getImage());
-			right.add(checkFilter(deBlur.getID()));
-			if(right.size()>2){
-				setChanged();
-				notifyObservers(right.get(right.size()-2));
-			}
-			if(right.get(right.size()-2)==true){
-				setChanged();
-				notifyObservers(image.getImage().get(image.getImage().size()-1));
-				green=green+1;
+			if(active3==true){
+				Filter deBlur= new DeBlur(copyImage(image.getImage().get(image.getImage().size()-1)));
+				image.getImage().add(deBlur.getImage());
+				right.add(checkFilter(deBlur.getID()));
+				if(right.size()>2){
+					setChanged();
+					notifyObservers(right.get(right.size()-2));
+				}
+				if(right.get(right.size()-2)==true){
+					setChanged();
+					notifyObservers(image.getImage().get(image.getImage().size()-1));
+				}
 			}
 		}
 		
@@ -163,6 +168,8 @@ public class MainControl extends Observable{
 				System.out.println(id);
 				if(order[2-index]==id){
 					System.out.println("testBestanden");
+					green=green+1;
+					setActive(id,false);
 					return true;
 				}else{
 					System.out.println("testNichtBestanden");
@@ -171,6 +178,20 @@ public class MainControl extends Observable{
 			}
 		}	
 		return false;
+	}
+
+	private void setActive(int id,boolean lever) {
+		if(id==5){
+			active1=lever;
+		}
+		
+		if(id==7){
+			active2=lever;
+		}
+		
+		if(id==2){
+			active3=lever;
+		}
 	}
 
 	public void win(){
