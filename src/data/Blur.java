@@ -13,6 +13,7 @@ public class Blur extends Interference {
 	private BufferedImage image;
 	/** Blur Matrix*/
 	private final static float[] BLUR_MATRIX = {0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f};
+	private int id=2;
 	
 	/** Ctor fuer ein bild mit Blur.
 	 * @param image Das zu bearbeitende Bild
@@ -34,6 +35,10 @@ public class Blur extends Interference {
 	 */
 	public BufferedImage getImage(){
 		return image;
+	}
+	
+	public int getID(){
+		return id;
 	}
 	
 	/** Wendet die Unschaerfe auf das Bild an. 

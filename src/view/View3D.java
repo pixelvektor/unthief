@@ -16,6 +16,7 @@ import javax.media.j3d.Background;
 import javax.media.j3d.BoundingSphere;
 import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Canvas3D;
+import javax.media.j3d.ColoringAttributes;
 import javax.media.j3d.ImageComponent2D;
 import javax.media.j3d.PointLight;
 import javax.media.j3d.Shape3D;
@@ -47,30 +48,51 @@ public class View3D extends MouseAdapter implements Observer {
 	private TransformGroup tgCamera;
 	BufferedImage image;
 	Shape3D shape;
+	Shape3D shapeW;
 	private PickCanvas pickCanvas;
 	int init=0;
 	Appearance ap = new Appearance();
+	Appearance attention = new Appearance();
 	TextureUnitState textureUnitState[] = new TextureUnitState[1];
-	
 
 	@Override
 	public void update(final Observable o, final Object arg) {
 		if(subject==null)
 			subject = (MainControl) o;
-		image=(BufferedImage) arg;
-		if(init==1){
-			TextureLoader loader= new TextureLoader(image);
-			ImageComponent2D image = loader.getImage();
-			Texture2D texture = new Texture2D(Texture.BASE_LEVEL, Texture.RGB,image.getWidth(), image.getHeight());
-			texture.setImage(0, image);
-			texture.setBoundaryModeS(Texture.CLAMP_TO_EDGE);
-		    texture.setBoundaryModeT(Texture.CLAMP_TO_EDGE);
-		    texture.setBoundaryColor(new Color4f(0.0f, 1.0f, 0.0f, 0.0f));
-			textureUnitState[0].setTexture(texture);
-		}
-		if(init==0){
-		  init();
-		  init++;
+		if(arg instanceof BufferedImage){
+			if(init==1){
+				image=(BufferedImage) arg;
+				TextureLoader loader= new TextureLoader(image);
+				ImageComponent2D image = loader.getImage();
+				Texture2D texture = new Texture2D(Texture.BASE_LEVEL, Texture.RGB,image.getWidth(), image.getHeight());
+				texture.setImage(0, image);
+				texture.setBoundaryModeS(Texture.CLAMP_TO_EDGE);
+			    texture.setBoundaryModeT(Texture.CLAMP_TO_EDGE);
+			    texture.setBoundaryColor(new Color4f(0.0f, 1.0f, 0.0f, 0.0f));
+				textureUnitState[0].setTexture(texture);
+			}
+			if(init==0){
+				image=(BufferedImage) arg;
+				init();
+				init++;
+			}
+		}else{
+			System.out.println("möööööp");
+			Boolean right=(Boolean) arg;
+			if(right==false){
+				System.out.println("möööööp");
+				Appearance ap = new Appearance();
+				Color3f col = new Color3f(1.0f, 0.0f, 0.0f);
+				ColoringAttributes ca = new ColoringAttributes(col, ColoringAttributes.NICEST);
+				ap.setColoringAttributes(ca);
+				shapeW.setAppearance(ap);
+			}else{
+				Appearance ap = new Appearance();
+				Color3f col = new Color3f(1.0f, 1.0f, 1.0f);
+				ColoringAttributes ca = new ColoringAttributes(col, ColoringAttributes.NICEST);
+				ap.setColoringAttributes(ca);
+				shapeW.setAppearance(ap);
+			}
 		}
 		
 	}
@@ -106,11 +128,12 @@ public class View3D extends MouseAdapter implements Observer {
 	    ap.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_WRITE );
 	    
 	    
-		createSceneGraph(universe, ap);
-		createSceneGraphD(universe, ap);
+		createSceneGraph(universe);
+		createSceneGraphD(universe);
+		createSceneGraphWarnung(universe);
 		
 	    
-	    pickCanvas= new PickCanvas(myCanvas, createSceneGraphButton(universe, ap,"Button.obj"));
+	    pickCanvas= new PickCanvas(myCanvas, createSceneGraphButton(universe,"Button.obj"));
 		pickCanvas.setMode(PickCanvas.BOUNDS);
 		myCanvas.addMouseListener((MouseListener) this);
 	    
@@ -135,6 +158,37 @@ public class View3D extends MouseAdapter implements Observer {
 		frame.setVisible(true);
 	}
 	
+	private void createSceneGraphWarnung(SimpleUniverse universe) {
+		ObjectFile obj = new ObjectFile();
+		Scene loadedScene = null;
+		
+		// Szene aus Datei einlesen
+		try
+		{
+			loadedScene = obj.load("res/obj/Warnlicht.obj");
+		} catch (FileNotFoundException | IncorrectFormatException
+				| ParsingErrorException e)
+		{
+			e.printStackTrace();
+		}
+		
+		
+		Color3f col = new Color3f(1.0f, 1.0f, 1.0f);
+		ColoringAttributes ca = new ColoringAttributes(col, ColoringAttributes.NICEST);
+		attention.setColoringAttributes(ca);
+	    attention.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_READ );
+	    attention.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_WRITE );
+		// Objekt aus geladener Datei auslesen
+		BranchGroup theScene = loadedScene.getSceneGroup();
+		shapeW = (Shape3D) theScene.getChild(0);
+		shapeW.setCapability(shapeW.ALLOW_APPEARANCE_WRITE);
+		shapeW.setAppearance(attention);
+		System.out.println(shapeW.getAppearanceOverrideEnable());
+		universe.addBranchGraph(theScene);
+		
+	}
+
+
 	private void createLights(SimpleUniverse universe)
 	{
 		BoundingSphere bounds = new BoundingSphere(new Point3d(0.0, 0.0, 0.0), Double.MAX_VALUE);
@@ -149,7 +203,7 @@ public class View3D extends MouseAdapter implements Observer {
 		universe.addBranchGraph(lights);
 	}
 
-	private void createSceneGraph(SimpleUniverse universe, Appearance ap)
+	private void createSceneGraph(SimpleUniverse universe)
 	{
 		ObjectFile obj = new ObjectFile();
 		Scene loadedScene = null;
@@ -176,7 +230,7 @@ public class View3D extends MouseAdapter implements Observer {
 		universe.addBranchGraph(theScene);
 	}
 	
-	private void createSceneGraphD(SimpleUniverse universe, Appearance ap)
+	private void createSceneGraphD(SimpleUniverse universe)
 	{
 		ObjectFile obj = new ObjectFile();
 		Scene loadedScene = null;
@@ -202,7 +256,7 @@ public class View3D extends MouseAdapter implements Observer {
 		
 	}
 	
-	private BranchGroup createSceneGraphButton(SimpleUniverse universe, Appearance ap,String name)
+	private BranchGroup createSceneGraphButton(SimpleUniverse universe, String name)
 	{
 		ObjectFile obj = new ObjectFile();
 		Scene loadedScene = null;
@@ -245,9 +299,6 @@ public class View3D extends MouseAdapter implements Observer {
 	       Shape3D s = (Shape3D)result.getNode(PickResult.SHAPE3D);
 	       String name= result.getNode(PickResult.SHAPE3D).getName();
 	       if(s !=null){
-		    	System.out.println("juhu!");
-		    	System.out.println(name);
-		    	System.out.println(s.hashCode());
 		    	subject.play(name);
 		    }else{
 		    	System.out.println("ups!");

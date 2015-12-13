@@ -10,6 +10,7 @@ public class Noise extends Interference {
 	private static final String NAME = "Noise";
 	/** Das zu bearbeitende Bild*/
 	private BufferedImage image;
+    private int id=7;
 	
 	/**
 	 * Getter fuer den Namen der Stoerung
@@ -17,6 +18,10 @@ public class Noise extends Interference {
 	 */
 	public String getName() {
 		return NAME;
+	}
+	
+	public int getID(){
+		return id;
 	}
 	
 	/**

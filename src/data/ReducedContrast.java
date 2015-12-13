@@ -7,6 +7,7 @@ public class ReducedContrast extends Interference {
 	private BufferedImage image;
 	float scaleFactor = 0.5f;
     float offset = 0;
+    private int id=5;
 	
 	public ReducedContrast(BufferedImage image){
 		this.image=image;
@@ -19,11 +20,15 @@ public class ReducedContrast extends Interference {
 	    }
 	 
 	 /**
-		 * Getter fuer das bearbeitete Bild
-		 * @return Das bearbeitete Bild
-		 */
-		public BufferedImage getImage(){
-			return image;
-		}
+	 * Getter fuer das bearbeitete Bild
+	 * @return Das bearbeitete Bild
+	 */
+	public BufferedImage getImage(){
+		return image;
+	}
+	
+	public int getID(){
+		return id;
+	}
 
 }

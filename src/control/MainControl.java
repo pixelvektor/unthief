@@ -14,6 +14,7 @@ import javax.swing.JLabel;
 
 import data.Blur;
 import data.Code;
+import data.DeBlur;
 import data.DeNoise;
 import data.Filter;
 import data.Image;
@@ -31,7 +32,8 @@ public class MainControl extends Observable{
 	private final Code code;
 	/** true solange das Spiel laeuft. */
 	private boolean isRunning = true;
-	private boolean buttonClicked=false;
+	private int order[];
+	private ArrayList<Boolean> right= new ArrayList<>();
 
 	
 	public MainControl(Observer... observers) {
@@ -41,16 +43,16 @@ public class MainControl extends Observable{
 		image = new Image();
 		System.out.println("image erstellt");
 		code = new Code();
+		order=code.getOrder();
 		gameInit();
 	}
 	
 	public void gameInit(){
 		this.user = new User("Alice");
+		right.add(true);
 		codeAnalyse();
-		useInterference();
 		setChanged();
 		notifyObservers(image.getImage().get(image.getImage().size()-1));
-		gameStart();
 	}
 	
 	public void testbild(BufferedImage images){
@@ -62,31 +64,26 @@ public class MainControl extends Observable{
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
-	public void gameStart(){
-		
-	}
-	
 	public void gameEnd(){
 		isRunning=false;
 	}
 	
 	public void codeAnalyse(){
-		
-	}
-	
-	public void useFilter(){
-		
-	}
-	
-	public void useInterference(){
-		Interference reducedContrast= new ReducedContrast(copyImage(image.getImage().get(image.getImage().size()-1)));
-		image.getImage().add(reducedContrast.getImage());
-		
-		Interference noise=new Noise(copyImage(image.getImage().get(image.getImage().size()-1)));
-		image.getImage().add(noise.getImage());
-		
-		//Interference blur = new Blur(copyImage(image.getImage().get(image.getImage().size()-1)));
-		//image.getImage().add(blur.getImage());
+		for(int index=0;index<order.length;index++){
+			System.out.println(order[index]);
+			if(order[index]==5){
+				Interference reducedContrast= new ReducedContrast(copyImage(image.getImage().get(image.getImage().size()-1)));
+				image.getImage().add(reducedContrast.getImage());
+			}
+			if(order[index]==7){
+				Interference noise=new Noise(copyImage(image.getImage().get(image.getImage().size()-1)));
+				image.getImage().add(noise.getImage());
+			}
+			if(order[index]==2){
+				//Interference blur = new Blur(copyImage(image.getImage().get(image.getImage().size()-1)));
+				//image.getImage().add(blur.getImage());
+			}
+		}
 	}
 	
 	static BufferedImage copyImage(BufferedImage image) {
@@ -98,24 +95,64 @@ public class MainControl extends Observable{
 	
 	public void play(String button){
 		System.out.println("clicked");
-		if(button.equals("Button2")){
-		Filter denoise=new DeNoise(copyImage(image.getImage().get(image.getImage().size()-1)));			
-		image.getImage().add(denoise.getImage());
+			if(button.equals("Button2")){
+			Filter denoise=new DeNoise(copyImage(image.getImage().get(image.getImage().size()-1)));			
+			image.getImage().add(denoise.getImage());
+			right.add(checkFilter(denoise.getID()));
+			System.out.println(right.size()-2);
+			setChanged();
+			notifyObservers(right.get(right.size()-2));
+			if(right.get(right.size()-2)==true){
+			setChanged();
+			notifyObservers(image.getImage().get(image.getImage().size()-1));
+			}
 		}
 		
 		if(button.equals("Button1")){
 			Filter increaseContrast= new IncreaseContrast(copyImage(image.getImage().get(image.getImage().size()-1)));
 			image.getImage().add(increaseContrast.getImage());
+			right.add(checkFilter(increaseContrast.getID()));
+			setChanged();
+			notifyObservers(right.get(right.size()-2));
+			if(right.get(right.size()-2)==true){
+				setChanged();
+				notifyObservers(image.getImage().get(image.getImage().size()-1));
+				}
 		}
+		
+		if(button.equals("Button3")){
+			Filter deBlur= new DeBlur(copyImage(image.getImage().get(image.getImage().size()-1)));
+			image.getImage().add(deBlur.getImage());
+			right.add(checkFilter(deBlur.getID()));
+			setChanged();
+			notifyObservers(right.get(right.size()-2));
+			if(right.get(right.size()-2)==true){
+				setChanged();
+				notifyObservers(image.getImage().get(image.getImage().size()-1));
+				}
+		}
+		
 		if(button.equals("Button0")){
 			back();
+			setChanged();
+			notifyObservers(image.getImage().get(image.getImage().size()-1));
 		}
-		setChanged();
-		notifyObservers(image.getImage().get(image.getImage().size()-1));
 	}
 	
-	public boolean checkFilter(){
-		return true;
+	public boolean checkFilter(int id){
+		System.out.println(image.getImage().size());
+		for(int index=0; index<3;index++){
+			if(image.getImage().size()-4==index){
+				if(order[2]==id){
+					System.out.println("testBestanden");
+					return true;
+				}else{
+					System.out.println("testNichtBestanden");
+					return false;
+				}
+			}
+		}	
+		return false;
 	}
 
 	public void win(){
@@ -123,9 +160,15 @@ public class MainControl extends Observable{
 	}
 	
 	public void back(){
-		if(image.getImage().size()>=2){
-			image.getImage().remove(image.getImage().size()-1);
+		for(int i=0;i<2;i++){
+			if(image.getImage().size()>3){
+				image.getImage().remove(image.getImage().size()-1);	
+			}		
 		}
+		right.clear();
+		right.add(true);
+		setChanged();
+		notifyObservers(true);
 	}
 	
 	public BufferedImage getImage(){

@@ -8,6 +8,7 @@ public class DeNoise extends Filter {
 	
 	private BufferedImage image;
 	int[] window=new int[9];
+	private int id=7;
 	
 	public DeNoise(BufferedImage image){
 		this.image=image;
@@ -72,4 +73,6 @@ public class DeNoise extends Filter {
 	public BufferedImage getImage(){
 		return image;
 	}
+	
+	
 }

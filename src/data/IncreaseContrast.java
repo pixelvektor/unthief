@@ -8,6 +8,7 @@ public class IncreaseContrast extends Filter{
 	private BufferedImage image;
 	float scaleFactor = 2.0f;
     float offset = 0;
+    private int id=2;
 	
 	public IncreaseContrast(BufferedImage image){
 		this.image=image;
