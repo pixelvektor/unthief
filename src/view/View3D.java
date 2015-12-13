@@ -65,6 +65,7 @@ public class View3D extends MouseAdapter implements Observer {
 	private TextureUnitState textureUnitState[] = new TextureUnitState[1];
 	private BranchGroup buttons;
 	private ArrayList<Integer> buttonClicked= new ArrayList<Integer>();
+	private Boolean win=false;
 
 	@Override
 	public void update(final Observable o, final Object arg) {
@@ -123,6 +124,7 @@ public class View3D extends MouseAdapter implements Observer {
 
 	
 	private void win() {
+		win=true;
 		BufferedImage win = null;
 		try {
 			win = ImageIO.read(new FileInputStream("res/action_images/winTest.jpg"));
@@ -317,30 +319,22 @@ public class View3D extends MouseAdapter implements Observer {
 	}
 	
 	
-	public void mouseClicked(MouseEvent e)
-
-	{
-
-	    pickCanvas.setShapeLocation(e);
-
-	    PickResult result = pickCanvas.pickClosest();
-
-	    if (result == null) {
-
-	       System.out.println("Nothing picked");
-
-	    } else {
-
-	       Shape3D s = (Shape3D)result.getNode(PickResult.SHAPE3D);
-	       String name= result.getNode(PickResult.SHAPE3D).getName();
-	       buttonClicked.add(Integer.parseInt(name));
-	       if(s !=null){
-		    	subject.play(name);
+	public void mouseClicked(MouseEvent e){
+		if(win==false){
+		    pickCanvas.setShapeLocation(e);
+		    PickResult result = pickCanvas.pickClosest();
+		    if(result == null){
+		       System.out.println("Nothing picked");
 		    }else{
-		    	System.out.println("ups!");
-		    }
-	    }
-	    
-
+		       Shape3D s = (Shape3D)result.getNode(PickResult.SHAPE3D);
+		       String name= result.getNode(PickResult.SHAPE3D).getName();
+		       buttonClicked.add(Integer.parseInt(name));
+		       if(s !=null){
+			    	subject.play(name);
+			    }else{
+			    	System.out.println("ups!");
+			    }
+		    }   
+		}
 	}
 }
