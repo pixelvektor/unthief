@@ -99,8 +99,28 @@ public class MainControl extends Observable{
 		}
 	
 	public void play(String button){
+		if(button.equals("0")){
+			back();
+			setChanged();
+			notifyObservers(image.getImage().get(image.getImage().size()-1));
+		}
+		
+		if(button.equals("1")){
+				Filter increaseContrast= new IncreaseContrast(copyImage(image.getImage().get(image.getImage().size()-1)));
+				image.getImage().add(increaseContrast.getImage());
+				right.add(checkFilter(increaseContrast.getID()));
+				if(right.size()>2){
+					setChanged();
+					notifyObservers(right.get(right.size()-2));
+				}
+				if(right.get(right.size()-2)==true){
+					System.out.println("xx");
+					setChanged();
+					notifyObservers(image.getImage().get(image.getImage().size()-1));
+				}
+		}
+		
 		if(button.equals("2")){
-			if(active2==true){
 				Filter denoise=new DeNoise(copyImage(image.getImage().get(image.getImage().size()-1)));			
 				image.getImage().add(denoise.getImage());
 				right.add(checkFilter(denoise.getID()));
@@ -110,30 +130,13 @@ public class MainControl extends Observable{
 					notifyObservers(right.get(right.size()-2));
 				}
 				if(right.get(right.size()-2)==true){
+					System.out.println("xx");
 					setChanged();
 					notifyObservers(image.getImage().get(image.getImage().size()-1));
 				}
-			}
-		}
-		
-		if(button.equals("1")){
-			if(active1==true){
-				Filter increaseContrast= new IncreaseContrast(copyImage(image.getImage().get(image.getImage().size()-1)));
-				image.getImage().add(increaseContrast.getImage());
-				right.add(checkFilter(increaseContrast.getID()));
-				if(right.size()>2){
-					setChanged();
-					notifyObservers(right.get(right.size()-2));
-				}
-				if(right.get(right.size()-2)==true){
-					setChanged();
-					notifyObservers(image.getImage().get(image.getImage().size()-1));
-				}
-			}
 		}
 		
 		if(button.equals("3")){
-			if(active3==true){
 				Filter deBlur= new DeBlur(copyImage(image.getImage().get(image.getImage().size()-1)));
 				image.getImage().add(deBlur.getImage());
 				right.add(checkFilter(deBlur.getID()));
@@ -142,17 +145,12 @@ public class MainControl extends Observable{
 					notifyObservers(right.get(right.size()-2));
 				}
 				if(right.get(right.size()-2)==true){
+					System.out.println("xx");
 					setChanged();
 					notifyObservers(image.getImage().get(image.getImage().size()-1));
 				}
-			}
 		}
 		
-		if(button.equals("0")){
-			back();
-			setChanged();
-			notifyObservers(image.getImage().get(image.getImage().size()-1));
-		}
 		if(green==3){
 			System.out.println("gewonnen");
 			setChanged();
@@ -161,15 +159,11 @@ public class MainControl extends Observable{
 	}
 	
 	public boolean checkFilter(int id){
-		System.out.println(image.getImage().size());
 		for(int index=0; index<3;index++){
 			if(image.getImage().size()-4==index){
-				System.out.println(order[2-index]+"bla");
-				System.out.println(id);
 				if(order[2-index]==id){
 					System.out.println("testBestanden");
 					green=green+1;
-					setActive(id,false);
 					return true;
 				}else{
 					System.out.println("testNichtBestanden");
@@ -180,23 +174,6 @@ public class MainControl extends Observable{
 		return false;
 	}
 
-	private void setActive(int id,boolean lever) {
-		if(id==5){
-			active1=lever;
-		}
-		
-		if(id==7){
-			active2=lever;
-		}
-		
-		if(id==2){
-			active3=lever;
-		}
-	}
-
-	public void win(){
-		
-	}
 	
 	public void back(){
 		for(int i=0;i<2;i++){

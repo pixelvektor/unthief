@@ -66,6 +66,7 @@ public class View3D extends MouseAdapter implements Observer {
 	private BranchGroup buttons;
 	private ArrayList<Integer> buttonClicked= new ArrayList<Integer>();
 	private Boolean win=false;
+	private boolean active0=true;
 	private boolean active1=true;
 	private boolean active2=true;
 	private boolean active3=true;
@@ -88,7 +89,10 @@ public class View3D extends MouseAdapter implements Observer {
 				
 				if(!buttons.getChild(buttonClicked.get(buttonClicked.size()-1)).getName().equals("0")){
 					Shape3D button=(Shape3D) buttons.getChild(buttonClicked.get(buttonClicked.size()-1));
+					System.out.println("hu");
 					button.setAppearance(clicked);
+					setActive(Integer.parseInt(buttons.getChild(buttonClicked.get(buttonClicked.size()-1)).getName()), false);
+					setActive(0,false);
 				}
 			}
 			if(init==0){
@@ -99,16 +103,17 @@ public class View3D extends MouseAdapter implements Observer {
 		}else if(arg instanceof Boolean){
 			Boolean check=(Boolean) arg;
 			if(check==false){
-				System.out.println("möööööp");
 				if(!buttons.getChild(buttonClicked.get(buttonClicked.size()-1)).getName().equals("0")){
 					Shape3D button=(Shape3D) buttons.getChild(buttonClicked.get(buttonClicked.size()-2));
 					button.setAppearance(wrong);
+					setActive(0,true);
 				}
 			}else{
 				if(!buttons.getChild(buttonClicked.get(buttonClicked.size()-1)).getName().equals("0")){
 					Shape3D button=(Shape3D) buttons.getChild(buttonClicked.get(buttonClicked.size()-2));
 					button.setAppearance(right);
 					setActive(Integer.parseInt(buttons.getChild(buttonClicked.get(buttonClicked.size()-2)).getName()), false);
+					setActive(0,false);
 				}
 			}
 		}else if(arg instanceof String){
@@ -116,6 +121,7 @@ public class View3D extends MouseAdapter implements Observer {
 			if(message.equals("back")){
 				Shape3D button=(Shape3D) buttons.getChild(buttonClicked.get(buttonClicked.size()-3));
 				button.setAppearance(unClicked);
+				setActive(Integer.parseInt(buttons.getChild(buttonClicked.get(buttonClicked.size()-3)).getName()),true);
 			}
 			if(message.equals("win")){
 				Shape3D button=(Shape3D) buttons.getChild(buttonClicked.get(buttonClicked.size()-1));
@@ -312,9 +318,7 @@ public class View3D extends MouseAdapter implements Observer {
 		       Shape3D s = (Shape3D)result.getNode(PickResult.SHAPE3D);
 		       String name= result.getNode(PickResult.SHAPE3D).getName();
 		       if(getActive(Integer.parseInt(name))){
-			       if(!name.equals("0")){
-			    	   buttonClicked.add(Integer.parseInt(name));
-			       }
+		    	   buttonClicked.add(Integer.parseInt(name));
 			       if(s !=null){
 				    	subject.play(name);
 				    }else{
@@ -326,6 +330,10 @@ public class View3D extends MouseAdapter implements Observer {
 	}
 	
 	private void setActive(int id,boolean lever) {
+		if(id==0){
+			active0=lever;
+		}
+		
 		if(id==1){
 			active1=lever;
 		}
@@ -341,6 +349,10 @@ public class View3D extends MouseAdapter implements Observer {
 	}
 	
 	private boolean getActive(int id) {
+		if(id==0){
+			return active0;
+		}
+		
 		if(id==1){
 			return active1;
 		}
