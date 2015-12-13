@@ -6,12 +6,16 @@ import java.util.Observer;
 
 import control.MainControl;
 
+import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.media.j3d.Appearance;
 import javax.media.j3d.Background;
 import javax.media.j3d.BoundingSphere;
@@ -27,7 +31,9 @@ import javax.media.j3d.TextureAttributes;
 import javax.media.j3d.TextureUnitState;
 import javax.media.j3d.Transform3D;
 import javax.media.j3d.TransformGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.vecmath.Color3f;
 import javax.vecmath.Color4f;
 import javax.vecmath.Point3d;
@@ -106,11 +112,32 @@ public class View3D extends MouseAdapter implements Observer {
 				Shape3D button=(Shape3D) buttons.getChild(buttonClicked.get(buttonClicked.size()-3));
 				button.setAppearance(unClicked);
 			}
+			if(message.equals("win")){
+				Shape3D button=(Shape3D) buttons.getChild(buttonClicked.get(buttonClicked.size()-1));
+				button.setAppearance(right);
+				win();
+			}
 		}
 		
 	}
 
 	
+	private void win() {
+		BufferedImage win = null;
+		try {
+			win = ImageIO.read(new FileInputStream("res/action_images/winTest.jpg"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		JFrame frame = new JFrame();
+		frame.getContentPane().setLayout(new FlowLayout());
+		frame.getContentPane().add(new JLabel(new ImageIcon(win)));
+		frame.pack();
+		frame.setVisible(true);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+
+
 	public View3D(){
 		
 		

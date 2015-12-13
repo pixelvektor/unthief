@@ -34,6 +34,7 @@ public class MainControl extends Observable{
 	private boolean isRunning = true;
 	private int order[];
 	private ArrayList<Boolean> right= new ArrayList<>();
+	private int green=0;
 
 	
 	public MainControl(Observer... observers) {
@@ -56,6 +57,7 @@ public class MainControl extends Observable{
 	}
 	
 	public void testbild(BufferedImage images){
+		
 		JFrame frame = new JFrame();
 		frame.getContentPane().setLayout(new FlowLayout());
 		frame.getContentPane().add(new JLabel(new ImageIcon(images)));
@@ -94,7 +96,7 @@ public class MainControl extends Observable{
 		}
 	
 	public void play(String button){
-		System.out.println("clicked");
+		System.out.println(green+"g");
 			if(button.equals("2")){
 			Filter denoise=new DeNoise(copyImage(image.getImage().get(image.getImage().size()-1)));			
 			image.getImage().add(denoise.getImage());
@@ -107,6 +109,7 @@ public class MainControl extends Observable{
 			if(right.get(right.size()-2)==true){
 				setChanged();
 				notifyObservers(image.getImage().get(image.getImage().size()-1));
+				green=green+1;
 			}
 		}
 		
@@ -121,6 +124,7 @@ public class MainControl extends Observable{
 			if(right.get(right.size()-2)==true){
 				setChanged();
 				notifyObservers(image.getImage().get(image.getImage().size()-1));
+				green=green+1;
 			}
 		}
 		
@@ -135,6 +139,7 @@ public class MainControl extends Observable{
 			if(right.get(right.size()-2)==true){
 				setChanged();
 				notifyObservers(image.getImage().get(image.getImage().size()-1));
+				green=green+1;
 			}
 		}
 		
@@ -142,6 +147,11 @@ public class MainControl extends Observable{
 			back();
 			setChanged();
 			notifyObservers(image.getImage().get(image.getImage().size()-1));
+		}
+		if(green==3){
+			System.out.println("gewonnen");
+			setChanged();
+			notifyObservers("win");
 		}
 	}
 	
@@ -177,10 +187,5 @@ public class MainControl extends Observable{
 		right.add(true);
 		setChanged();
 		notifyObservers("back");
-	}
-	
-	public BufferedImage getImage(){
-		return image.getImage().get(0);
-		
 	}
 }
