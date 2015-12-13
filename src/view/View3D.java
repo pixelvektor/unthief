@@ -72,6 +72,9 @@ public class View3D extends MouseAdapter implements Observer {
 	private boolean active3=true;
 
 	@Override
+	/**
+	 * Aktualisiert die View.
+	 */
 	public void update(final Observable o, final Object arg) {
 		if(subject==null)
 			subject = (MainControl) o;
@@ -89,7 +92,6 @@ public class View3D extends MouseAdapter implements Observer {
 				
 				if(!buttons.getChild(buttonClicked.get(buttonClicked.size()-1)).getName().equals("0")){
 					Shape3D button=(Shape3D) buttons.getChild(buttonClicked.get(buttonClicked.size()-1));
-					System.out.println("hu");
 					button.setAppearance(clicked);
 					setActive(Integer.parseInt(buttons.getChild(buttonClicked.get(buttonClicked.size()-1)).getName()), false);
 					setActive(0,false);
@@ -132,6 +134,9 @@ public class View3D extends MouseAdapter implements Observer {
 		
 	}
 	
+	/**
+	 * Gibt Gewinnmitteilung aus.
+	 */
 	private void win() {
 		win=true;
 		BufferedImage win = null;
@@ -150,7 +155,10 @@ public class View3D extends MouseAdapter implements Observer {
 		winFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
-	public void init(){
+	/**
+	 * Initialisiert die View.
+	 */
+	private void init(){
 		JFrame frame=new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
@@ -200,7 +208,7 @@ public class View3D extends MouseAdapter implements Observer {
 	    
 		createSceneGraph(universe);
 		createSceneGraphDisplay(universe);
-		buttons=createSceneGraphButton(universe,"Button.obj");
+		buttons=createSceneGraphButton(universe);
 		
 	    pickCanvas= new PickCanvas(myCanvas, buttons);
 		pickCanvas.setMode(PickCanvas.BOUNDS);
@@ -226,7 +234,10 @@ public class View3D extends MouseAdapter implements Observer {
 		frame.setVisible(true);
 	}
 
-
+	/**
+	 * Erstellt die Lichter der Szene.
+	 * @param universe Das SimpleUniverse.
+	 */
 	private void createLights(SimpleUniverse universe){
 		BoundingSphere bounds = new BoundingSphere(new Point3d(0.0, 0.0, 0.0), Double.MAX_VALUE);
 		Color3f lightColor = new Color3f(0.7f, 0.7f, 0.7f);
@@ -238,7 +249,11 @@ public class View3D extends MouseAdapter implements Observer {
 		lights.addChild(dLight);
 		universe.addBranchGraph(lights);
 	}
-
+	
+	/**
+	 * Erstellt den Grundkoerper.
+	 * @param universe Das SimpleUniverse.
+	 */
 	private void createSceneGraph(SimpleUniverse universe){
 		ObjectFile obj = new ObjectFile();
 		Scene loadedScene = null;
@@ -263,6 +278,10 @@ public class View3D extends MouseAdapter implements Observer {
 		universe.addBranchGraph(theScene);
 	}
 	
+	/**
+	 * Erstellt das Display.
+	 * @param universe Das SimpleUniverse.
+	 */
 	private void createSceneGraphDisplay(SimpleUniverse universe){
 		ObjectFile obj = new ObjectFile();
 		Scene loadedScene = null;
@@ -283,14 +302,19 @@ public class View3D extends MouseAdapter implements Observer {
 		universe.addBranchGraph(theScene);		
 	}
 	
-	private BranchGroup createSceneGraphButton(SimpleUniverse universe, String name){
+	/**
+	 * Erstellt die Buttons.
+	 * @param universe Das SimpleUniverse.
+	 * @return die Buttons.
+	 */
+	private BranchGroup createSceneGraphButton(SimpleUniverse universe){
 		ObjectFile obj = new ObjectFile();
 		Scene loadedScene = null;
 		
 		// Szene aus Datei einlesen
 		try
 		{
-			loadedScene = obj.load("res/obj/"+name);
+			loadedScene = obj.load("res/obj/Button.obj");
 		} catch (FileNotFoundException | IncorrectFormatException
 				| ParsingErrorException e)
 		{
@@ -308,6 +332,9 @@ public class View3D extends MouseAdapter implements Observer {
 		return theScene;		
 	}
 	
+	/**
+	 * Wird bei Mausklick ausgefuehrt.
+	 */
 	public void mouseClicked(MouseEvent e){
 		if(win==false){
 		    pickCanvas.setShapeLocation(e);
@@ -329,38 +356,41 @@ public class View3D extends MouseAdapter implements Observer {
 		}
 	}
 	
+	/**
+	 * Aktiviert oder Deaktiviert den Button.
+	 * @param id ID des Buttons.
+	 * @param lever true oder false.
+	 */
 	private void setActive(int id,boolean lever) {
 		if(id==0){
 			active0=lever;
 		}
-		
 		if(id==1){
 			active1=lever;
 		}
-		
 		if(id==2){
 			active2=lever;
 		}
-		
 		if(id==3){
 			active3=lever;
-			System.out.println(active3);
 		}
 	}
 	
+	/**
+	 * Getter für den Status des Buttons.
+	 * @param id ID des Buttons.
+	 * @return Der Status des Buttons.
+	 */
 	private boolean getActive(int id) {
 		if(id==0){
 			return active0;
 		}
-		
 		if(id==1){
 			return active1;
 		}
-		
 		if(id==2){
 			return active2;
 		}
-		
 		if(id==3){
 			return active3;
 		}
