@@ -65,6 +65,7 @@ public class View3D extends MouseAdapter implements Observer {
 	private TextureUnitState textureUnitState[] = new TextureUnitState[1];
 	private BranchGroup buttons;
 	private ArrayList<Integer> buttonClicked= new ArrayList<Integer>();
+	private ArrayList<Integer> buttonGreen= new ArrayList<Integer>();
 	private Boolean win=false;
 	private boolean active0=false;
 	private boolean active1=true;
@@ -111,6 +112,9 @@ public class View3D extends MouseAdapter implements Observer {
 					Shape3D button=(Shape3D) buttons.getChild(buttonClicked.get(buttonClicked.size()-2));
 					button.setAppearance(wrong);
 					setActive(0,true);
+					for(int ind=2;ind==4;ind++){
+						setActive(ind,false);
+					}
 				}
 			}else{
 				if(!buttons.getChild(buttonClicked.get(buttonClicked.size()-1)).getName().equals("0")){
@@ -118,6 +122,7 @@ public class View3D extends MouseAdapter implements Observer {
 					button.setAppearance(right);
 					setActive(Integer.parseInt(buttons.getChild(buttonClicked.get(buttonClicked.size()-2)).getName()), false);
 					setActive(0,false);
+					buttonGreen.add(Integer.parseInt(buttons.getChild(buttonClicked.get(buttonClicked.size()-2)).getName()));
 				}
 			}
 		}else if(arg instanceof String){
@@ -126,6 +131,11 @@ public class View3D extends MouseAdapter implements Observer {
 				Shape3D button=(Shape3D) buttons.getChild(buttonClicked.get(buttonClicked.size()-3));
 				button.setAppearance(unClicked);
 				setActive(Integer.parseInt(buttons.getChild(buttonClicked.get(buttonClicked.size()-3)).getName()),true);
+				for(int ind=2;ind<=4;ind++){
+						if(!buttonGreen.contains(ind)){
+						setActive(ind,true);
+					}
+				}
 			}
 			if(message.equals("win")){
 				Shape3D button=(Shape3D) buttons.getChild(buttonClicked.get(buttonClicked.size()-1));
@@ -142,16 +152,16 @@ public class View3D extends MouseAdapter implements Observer {
 	private void help() {
 		BufferedImage helpImage = null;
 		try {
-			helpImage = ImageIO.read(new FileInputStream("res/action_images/winTest.jpg"));
+			helpImage = ImageIO.read(new FileInputStream("res/action_images/GameOver_2.jpg"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		JFrame helpFrame = new JFrame();
-		helpFrame.setTitle("Help");
-		helpFrame.setSize(1280, 720);
 		helpFrame.getContentPane().setLayout(new FlowLayout());
 		helpFrame.getContentPane().add(new JLabel(new ImageIcon(helpImage)));
 		helpFrame.pack();
+		helpFrame.setTitle("Help");
+		helpFrame.setSize(800, 600);
 		helpFrame.setVisible(true);
 		
 	}
@@ -163,16 +173,16 @@ public class View3D extends MouseAdapter implements Observer {
 		win=true;
 		BufferedImage win = null;
 		try {
-			win = ImageIO.read(new FileInputStream("res/action_images/winTest.jpg"));
+			win = ImageIO.read(new FileInputStream("res/action_images/GameOver_1.jpg"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		JFrame winFrame = new JFrame();
-		winFrame.setTitle("Win");
-		winFrame.setSize(1280, 720);
 		winFrame.getContentPane().setLayout(new FlowLayout());
 		winFrame.getContentPane().add(new JLabel(new ImageIcon(win)));
 		winFrame.pack();
+		winFrame.setTitle("Win");
+		winFrame.setSize(800, 600);
 		winFrame.setVisible(true);
 		winFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
@@ -366,6 +376,7 @@ public class View3D extends MouseAdapter implements Observer {
 		    }else{
 		       Shape3D s = (Shape3D)result.getNode(PickResult.SHAPE3D);
 		       String name= result.getNode(PickResult.SHAPE3D).getName();
+		       System.out.println(name+getActive(Integer.parseInt(name))+"!!!!!!!!!!!!!!");
 		       if(getActive(Integer.parseInt(name))){
 		    	   if(!name.equals("1")||!name.equals("5")){
 		    		   buttonClicked.add(Integer.parseInt(name));
@@ -389,13 +400,19 @@ public class View3D extends MouseAdapter implements Observer {
 		if(id==0){
 			active0=lever;
 		}
-		if(id==4){
+		if(id==1){
 			active1=lever;
 		}
 		if(id==2){
 			active2=lever;
 		}
 		if(id==3){
+			active3=lever;
+		}
+		if(id==4){
+			active3=lever;
+		}
+		if(id==5){
 			active3=lever;
 		}
 	}

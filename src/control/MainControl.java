@@ -123,13 +123,15 @@ public class MainControl extends Observable{
 			back();
 			setChanged();
 			notifyObservers(image.getImage().get(image.getImage().size()-1));
+			
 		}
 		
 		if(button.equals("1")){
 			setChanged();
 			notifyObservers("buttonClicked");
 			setChanged();
-			notifyObservers("help");		
+			notifyObservers("help");
+			
 		}
 		
 		if(button.equals("2")){
@@ -147,7 +149,7 @@ public class MainControl extends Observable{
 				setChanged();
 				notifyObservers(image.getImage().get(image.getImage().size()-1));
 			}
-				
+			
 		}
 		
 		if(button.equals("3")){
@@ -164,6 +166,7 @@ public class MainControl extends Observable{
 				setChanged();
 				notifyObservers(image.getImage().get(image.getImage().size()-1));
 			}
+			
 		}
 		
 		if(button.equals("4")){
@@ -178,10 +181,10 @@ public class MainControl extends Observable{
 				notifyObservers(right.get(right.size()-2));
 			}
 			if(right.get(right.size()-2)==true){
-				System.out.println("xx");
 				setChanged();
 				notifyObservers(image.getImage().get(image.getImage().size()-1));
 			}
+			
 		}
 		
 		if(button.equals("5")){
@@ -196,6 +199,7 @@ public class MainControl extends Observable{
 			setChanged();
 			notifyObservers("win");
 		}
+		
 	}
 	
 	/**

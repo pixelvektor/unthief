@@ -27,7 +27,7 @@ public class Audio3D implements Observer {
     static float[] listenerPos = { 0.0f, 0.0f, 0.0f };
     static float[] listenerVel = { 0.0f, 0.0f, 0.0f };
     static float[] listenerOri = { 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f };
-
+    private int init=0;
     
     static int loadALData() {
 
@@ -46,16 +46,10 @@ public class Audio3D implements Observer {
             return AL.AL_FALSE;
 	        }
         System.out.println(buffer.length+"wat");
-        for(int index = 0; index <= fileList.size()-1; index++){
-        	System.out.println(index);
-        	
-        	System.out.println(buffer[index]);
+        for(int index = 0; index <= fileList.size()-1; index++){     
         	String file = PATH + fileList.get(index);
-        	System.out.println(file);
         	ALut.alutLoadWAVFile(file,format,data,size,freq,loop);
         	al.alBufferData(buffer[index],format[0],data[0],size[0],freq[0]);
-        	System.out.println(PATH+fileList.get(index));
-        	System.out.println(buffer[index]);
         	
         }
         
@@ -68,14 +62,7 @@ public class Audio3D implements Observer {
     }
     
     static void addSource(int type) {
-    	System.out.println("add");
-        al.alGenSources(fileList.size(), source, 0);
-        System.out.println("did");
-
-        if (al.alGetError() != AL.AL_NO_ERROR) {
-            System.err.println("Error generating audio source.");
-            System.exit(1);
-        }
+    	
 
         al.alSourcei (source[type], AL.AL_BUFFER,   buffer[type]);
         al.alSourcef (source[type], AL.AL_PITCH,    1.0f         );
@@ -83,8 +70,6 @@ public class Audio3D implements Observer {
         al.alSourcefv(source[type], AL.AL_POSITION, sourcePos.get(type)    , 0);
         al.alSourcefv(source[type], AL.AL_VELOCITY, sourceVel    , 0);
         al.alSourcei (source[type], AL.AL_LOOPING,  AL.AL_FALSE      );
-        System.out.println(type+"test");
-
         
     }
     
@@ -104,42 +89,41 @@ public class Audio3D implements Observer {
     
     private void init(){
     	fileList = new FileLister(PATH, "wav").getFiles();
-    	System.out.println("huhu");
     	buffer=new int[fileList.size()];
     	source=new int[fileList.size()];
-    	//System.out.println(sources[2]);
     	for(int index = 0; index <= fileList.size()-1; index++){
         	sourcePos.add(randomSource());
-        	System.out.println(sourcePos.get(index));
     	}
     	al = ALFactory.getAL();
         ALut.alutInit();
         al.alGetError();
-        System.out.println("bla1");
         if(loadALData() == AL.AL_FALSE) {
-        	System.out.println("bla2");
             System.exit(1);    
         }
-        System.out.println("bla3");
         setListenerValues();
+        al.alGenSources(source.length, source, 0);
+
+        if (al.alGetError() != AL.AL_NO_ERROR) {
+            System.err.println("Error generating audio source.");
+            System.exit(1);
+        }
         for(int index = 0; index <= fileList.size()-1; index++){
-        	System.out.println("ha");
         	addSource(index);
         }
     }
         
 	private float[] randomSource() {
 		float min=0.0f;
-		float max=5.0f;
+		float max=2.0f;
 		Random rand=new Random();
 		float[] sourcePosTT= {rand.nextFloat()*(max-min)+min, rand.nextFloat()*(max-min)+min, rand.nextFloat()*(max-min)+min};
 		return sourcePosTT;
 	}
 
 	private void play() {
-		System.out.println("play");
-        al.alSourcePlay(source[0]);
-        System.out.println(source[0]);
+		Random rand=new Random();
+		int index=rand.nextInt(fileList.size()-1);
+        al.alSourcePlay(index);
 	}
 
 	@Override
@@ -149,13 +133,21 @@ public class Audio3D implements Observer {
 		if(arg1 instanceof String){
 			String message=(String)arg1;
 			if(message.equals("init")){
-				System.out.println(message);
 				init();
 				initButton();
 			}
 			if(message.equals("buttonClicked")){
 				System.out.println(message);
 				playButton();
+			}
+			if(message.equals("play")){
+				try {
+				    Thread.sleep(1000);                 
+				} catch(InterruptedException ex) {
+					System.out.println("ups");
+				    Thread.currentThread().interrupt();
+				}
+				play();
 			}
 			if(message.equals("end")){
 				killAllData();
@@ -176,7 +168,6 @@ public class Audio3D implements Observer {
 	    ALut.alutLoadWAVFile("res/audio_bt/277651__coral-island-studios__button-4.wav", format, data, size, freq, loop);
         al.alBufferData(buffer[0], format[0], data[0], size[0], freq[0]);
 	    al.alGenSources(1, sourceButton, 0);
-        System.out.println("button");
 
         if (al.alGetError() != AL.AL_NO_ERROR) {
             System.err.println("Error generating audio source.");
