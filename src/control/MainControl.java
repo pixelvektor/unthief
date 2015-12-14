@@ -29,7 +29,6 @@ public class MainControl extends Observable{
 	private ArrayList<Interference> interference = new ArrayList<>();
 	private ArrayList<Filter> filter = new ArrayList<>();
 	private final Image image;
-	private final Code code;
 	/** true solange das Spiel laeuft. */
 	private boolean isRunning = true;
 	private int order[];
@@ -46,8 +45,7 @@ public class MainControl extends Observable{
 		}
 		image = new Image();
 		System.out.println("image erstellt");
-		code = new Code();
-		order=code.getOrder();
+		order= new Code().getOrder();
 		gameInit();
 	}
 	
@@ -85,8 +83,8 @@ public class MainControl extends Observable{
 				image.getImage().add(noise.getImage());
 			}
 			if(order[index]==2){
-				//Interference blur = new Blur(copyImage(image.getImage().get(image.getImage().size()-1)));
-				//image.getImage().add(blur.getImage());
+				Interference blur = new Blur(copyImage(image.getImage().get(image.getImage().size()-1)));
+				image.getImage().add(blur.getImage());
 			}
 		}
 	}

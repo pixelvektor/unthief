@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
+import java.awt.image.WritableRaster;
 
 public class Blur extends Interference {
 	/** Name der Stoerung*/
@@ -43,8 +44,33 @@ public class Blur extends Interference {
 	
 	/** Wendet die Unschaerfe auf das Bild an. 
 	 */
-	private void blur() {
+	private void blur(String bla) {
 		BufferedImageOp bio = new ConvolveOp(new Kernel(10, 1, BLUR_MATRIX));
 		image = bio.filter(image, null);
+	}
+	
+	private void blur() {
+		WritableRaster unBlurred = image.getRaster();
+		WritableRaster blurred = image.getRaster();
+		int bands = unBlurred.getNumBands();
+		int width = image.getWidth();
+		int height = image.getHeight();
+		int filterLength = BLUR_MATRIX.length;
+		int halfFilterLength = filterLength/2;
+		
+		for (int i = 0; i < height; i++) {
+			for (int j = halfFilterLength; j < (width - halfFilterLength); j++) {
+				float newSample = 0f;
+				for (int k = 0; k < filterLength; k++) {
+					int jOffset = - halfFilterLength + k;
+					float sample = unBlurred.getSampleFloat(j + jOffset, i, 0) * BLUR_MATRIX[k];
+					newSample += sample;
+				}
+				for (int l = 0; l < bands; l++) {
+					blurred.setSample(j, i, l, newSample);
+				}
+			}
+		}
+		image.setData(blurred);
 	}
 }
