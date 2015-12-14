@@ -28,28 +28,34 @@ public class MainControl extends Observable{
 	private User user;
 	private ArrayList<Interference> interference = new ArrayList<>();
 	private ArrayList<Filter> filter = new ArrayList<>();
+	/** Bild */
 	private final Image image;
 	/** true solange das Spiel laeuft. */
 	private boolean isRunning = true;
+	/** Array der Reihenfolge der Stoerungen. */
 	private int order[];
+	/** ArrayList mit Ergebnissen von checkFilter(). */
 	private ArrayList<Boolean> right= new ArrayList<>();
+	/** Richtige Filter. */
 	private int green=0;
-	private boolean active1=true;
-	private boolean active2=true;
-	private boolean active3=true;
-
 	
+	/** 
+	 * C-tor 
+	 * @param observers Beobachter
+	 */
 	public MainControl(Observer... observers) {
 		for (Observer o : observers) {
 			this.addObserver(o);
 		}
 		image = new Image();
-		System.out.println("image erstellt");
 		order= new Code().getOrder();
 		gameInit();
 	}
 	
-	public void gameInit(){
+	/**
+	 * Initialisiert das Spiel.
+	 */
+	private void gameInit(){
 		this.user = new User("Alice");
 		right.add(true);
 		codeAnalyse();
@@ -57,7 +63,7 @@ public class MainControl extends Observable{
 		notifyObservers(image.getImage().get(image.getImage().size()-1));
 	}
 	
-	public void testbild(BufferedImage images){
+	private void testbild(BufferedImage images){
 		
 		JFrame frame = new JFrame();
 		frame.getContentPane().setLayout(new FlowLayout());
@@ -67,11 +73,14 @@ public class MainControl extends Observable{
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
-	public void gameEnd(){
+	private void gameEnd(){
 		isRunning=false;
 	}
 	
-	public void codeAnalyse(){
+	/**
+	 * Analysiert den Code und legt die Reihenfolge fest.
+	 */
+	private void codeAnalyse(){
 		for(int index=0;index<order.length;index++){
 			System.out.println(order[index]);
 			if(order[index]==5){
@@ -89,6 +98,11 @@ public class MainControl extends Observable{
 		}
 	}
 	
+	/**
+	 * Kopiert Bilder.
+	 * @param image das zu kopierende Bild.
+	 * @return das kopierte Bild.
+	 */
 	static BufferedImage copyImage(BufferedImage image){
 		 ColorModel colorModel = image.getColorModel();
 		 boolean isAlphaPremultiplied = colorModel.isAlphaPremultiplied();
@@ -96,6 +110,10 @@ public class MainControl extends Observable{
 		 return new BufferedImage(colorModel, raster, isAlphaPremultiplied, null);
 		}
 	
+	/**
+	 * Definiert die Reaktion auf einen gedrueckten Button.
+	 * @param button der gedr�ckte Button.
+	 */
 	public void play(String button){
 		if(button.equals("0")){
 			back();
@@ -104,34 +122,24 @@ public class MainControl extends Observable{
 		}
 		
 		if(button.equals("1")){
-				Filter increaseContrast= new IncreaseContrast(copyImage(image.getImage().get(image.getImage().size()-1)));
-				image.getImage().add(increaseContrast.getImage());
-				right.add(checkFilter(increaseContrast.getID()));
-				if(right.size()>2){
-					setChanged();
-					notifyObservers(right.get(right.size()-2));
-				}
-				if(right.get(right.size()-2)==true){
-					System.out.println("xx");
-					setChanged();
-					notifyObservers(image.getImage().get(image.getImage().size()-1));
-				}
+			setChanged();
+			notifyObservers("help");		
 		}
 		
 		if(button.equals("2")){
-				Filter denoise=new DeNoise(copyImage(image.getImage().get(image.getImage().size()-1)));			
-				image.getImage().add(denoise.getImage());
-				right.add(checkFilter(denoise.getID()));
-				System.out.println(right.size()-2);
-				if(right.size()>2){
-					setChanged();
-					notifyObservers(right.get(right.size()-2));
-				}
-				if(right.get(right.size()-2)==true){
-					System.out.println("xx");
-					setChanged();
-					notifyObservers(image.getImage().get(image.getImage().size()-1));
-				}
+			Filter increaseContrast= new IncreaseContrast(copyImage(image.getImage().get(image.getImage().size()-1)));
+			image.getImage().add(increaseContrast.getImage());
+			right.add(checkFilter(increaseContrast.getID()));
+			if(right.size()>2){
+				setChanged();
+				notifyObservers(right.get(right.size()-2));
+			}
+			if(right.get(right.size()-2)==true){
+				System.out.println("xx");
+				setChanged();
+				notifyObservers(image.getImage().get(image.getImage().size()-1));
+			}
+				
 		}
 		
 		if(button.equals("3")){
@@ -143,12 +151,31 @@ public class MainControl extends Observable{
 					notifyObservers(right.get(right.size()-2));
 				}
 				if(right.get(right.size()-2)==true){
-					System.out.println("xx");
 					setChanged();
 					notifyObservers(image.getImage().get(image.getImage().size()-1));
 				}
 		}
 		
+		if(button.equals("4")){
+			Filter denoise=new DeNoise(copyImage(image.getImage().get(image.getImage().size()-1)));			
+			image.getImage().add(denoise.getImage());
+			right.add(checkFilter(denoise.getID()));
+			System.out.println(right.size()-2);
+			if(right.size()>2){
+				setChanged();
+				notifyObservers(right.get(right.size()-2));
+			}
+			if(right.get(right.size()-2)==true){
+				System.out.println("xx");
+				setChanged();
+				notifyObservers(image.getImage().get(image.getImage().size()-1));
+			}
+		}
+		
+		if(button.equals("5")){
+			setChanged();
+			notifyObservers("end");
+		}
 		if(green==3){
 			System.out.println("gewonnen");
 			setChanged();
@@ -156,7 +183,13 @@ public class MainControl extends Observable{
 		}
 	}
 	
-	public boolean checkFilter(int id){
+	/**
+	 * Ueberprueft ob die Filter in der richtigen Reihenfolge angewandt worden sind. 
+	 * @param id ID des Filters.
+	 * @return true, wenn in der richtigen Reihenfolge.
+	 * @return false, sonst.
+	 */
+	private boolean checkFilter(int id){
 		for(int index=0; index<3;index++){
 			if(image.getImage().size()-4==index){
 				if(order[2-index]==id){
@@ -172,8 +205,10 @@ public class MainControl extends Observable{
 		return false;
 	}
 
-	
-	public void back(){
+	/**
+	 * Einen Schritt zur�ck, bei falscher Eingabe.
+	 */
+	private void back(){
 		for(int i=0;i<2;i++){
 			if(image.getImage().size()>3){
 				image.getImage().remove(image.getImage().size()-1);	
