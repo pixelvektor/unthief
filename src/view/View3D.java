@@ -66,10 +66,12 @@ public class View3D extends MouseAdapter implements Observer {
 	private BranchGroup buttons;
 	private ArrayList<Integer> buttonClicked= new ArrayList<Integer>();
 	private Boolean win=false;
-	private boolean active0=true;
+	private boolean active0=false;
 	private boolean active1=true;
 	private boolean active2=true;
 	private boolean active3=true;
+	private boolean active4=true;
+	private boolean active5=true;
 
 	@Override
 	/**
@@ -130,10 +132,30 @@ public class View3D extends MouseAdapter implements Observer {
 				button.setAppearance(right);
 				win();
 			}
+			if(message.equals("help")){
+				help();
+			}
 		}
 		
 	}
 	
+	private void help() {
+		BufferedImage helpImage = null;
+		try {
+			helpImage = ImageIO.read(new FileInputStream("res/action_images/winTest.jpg"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		JFrame helpFrame = new JFrame();
+		helpFrame.setTitle("Help");
+		helpFrame.setSize(1280, 720);
+		helpFrame.getContentPane().setLayout(new FlowLayout());
+		helpFrame.getContentPane().add(new JLabel(new ImageIcon(helpImage)));
+		helpFrame.pack();
+		helpFrame.setVisible(true);
+		
+	}
+
 	/**
 	 * Gibt Gewinnmitteilung aus.
 	 */
@@ -322,7 +344,7 @@ public class View3D extends MouseAdapter implements Observer {
 		}
 		// Objekt aus geladener Datei auslesen
 		BranchGroup theScene = loadedScene.getSceneGroup();
-		for(int i=0;i<4;i++){
+		for(int i=0;i<6;i++){
 		Shape3D shape = (Shape3D) theScene.getChild(i);
 		shape.setName(Integer.toString(i));
 		shape.setAppearance(unClicked);
@@ -345,7 +367,9 @@ public class View3D extends MouseAdapter implements Observer {
 		       Shape3D s = (Shape3D)result.getNode(PickResult.SHAPE3D);
 		       String name= result.getNode(PickResult.SHAPE3D).getName();
 		       if(getActive(Integer.parseInt(name))){
-		    	   buttonClicked.add(Integer.parseInt(name));
+		    	   if(!name.equals("1")||!name.equals("5")){
+		    		   buttonClicked.add(Integer.parseInt(name));
+		    	   }
 			       if(s !=null){
 				    	subject.play(name);
 				    }else{
@@ -365,7 +389,7 @@ public class View3D extends MouseAdapter implements Observer {
 		if(id==0){
 			active0=lever;
 		}
-		if(id==1){
+		if(id==4){
 			active1=lever;
 		}
 		if(id==2){
@@ -393,6 +417,12 @@ public class View3D extends MouseAdapter implements Observer {
 		}
 		if(id==3){
 			return active3;
+		}
+		if(id==4){
+			return active4;
+		}
+		if(id==5){
+			return active5;
 		}
 		return true;
 	}

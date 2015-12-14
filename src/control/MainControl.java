@@ -125,34 +125,24 @@ public class MainControl extends Observable{
 		}
 		
 		if(button.equals("1")){
-				Filter increaseContrast= new IncreaseContrast(copyImage(image.getImage().get(image.getImage().size()-1)));
-				image.getImage().add(increaseContrast.getImage());
-				right.add(checkFilter(increaseContrast.getID()));
-				if(right.size()>2){
-					setChanged();
-					notifyObservers(right.get(right.size()-2));
-				}
-				if(right.get(right.size()-2)==true){
-					System.out.println("xx");
-					setChanged();
-					notifyObservers(image.getImage().get(image.getImage().size()-1));
-				}
+			setChanged();
+			notifyObservers("help");		
 		}
 		
 		if(button.equals("2")){
-				Filter denoise=new DeNoise(copyImage(image.getImage().get(image.getImage().size()-1)));			
-				image.getImage().add(denoise.getImage());
-				right.add(checkFilter(denoise.getID()));
-				System.out.println(right.size()-2);
-				if(right.size()>2){
-					setChanged();
-					notifyObservers(right.get(right.size()-2));
-				}
-				if(right.get(right.size()-2)==true){
-					System.out.println("xx");
-					setChanged();
-					notifyObservers(image.getImage().get(image.getImage().size()-1));
-				}
+			Filter increaseContrast= new IncreaseContrast(copyImage(image.getImage().get(image.getImage().size()-1)));
+			image.getImage().add(increaseContrast.getImage());
+			right.add(checkFilter(increaseContrast.getID()));
+			if(right.size()>2){
+				setChanged();
+				notifyObservers(right.get(right.size()-2));
+			}
+			if(right.get(right.size()-2)==true){
+				System.out.println("xx");
+				setChanged();
+				notifyObservers(image.getImage().get(image.getImage().size()-1));
+			}
+				
 		}
 		
 		if(button.equals("3")){
@@ -169,6 +159,26 @@ public class MainControl extends Observable{
 				}
 		}
 		
+		if(button.equals("4")){
+			Filter denoise=new DeNoise(copyImage(image.getImage().get(image.getImage().size()-1)));			
+			image.getImage().add(denoise.getImage());
+			right.add(checkFilter(denoise.getID()));
+			System.out.println(right.size()-2);
+			if(right.size()>2){
+				setChanged();
+				notifyObservers(right.get(right.size()-2));
+			}
+			if(right.get(right.size()-2)==true){
+				System.out.println("xx");
+				setChanged();
+				notifyObservers(image.getImage().get(image.getImage().size()-1));
+			}
+		}
+		
+		if(button.equals("5")){
+			setChanged();
+			notifyObservers("end");
+		}
 		if(green==3){
 			System.out.println("gewonnen");
 			setChanged();
