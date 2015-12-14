@@ -2,9 +2,6 @@ package data;
 
 
 import java.awt.image.BufferedImage;
-import java.awt.image.BufferedImageOp;
-import java.awt.image.ConvolveOp;
-import java.awt.image.Kernel;
 import java.awt.image.WritableRaster;
 
 public class Blur extends Interference {
@@ -14,7 +11,7 @@ public class Blur extends Interference {
 	private BufferedImage image;
 	/** Blur Matrix*/
 	private final static float[] BLUR_MATRIX = {0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f};
-	private int id=2;
+	private final static int ID = 2;
 	
 	/** Ctor fuer ein bild mit Blur.
 	 * @param image Das zu bearbeitende Bild
@@ -38,17 +35,16 @@ public class Blur extends Interference {
 		return image;
 	}
 	
+	public static float[] getBlurMatrix() {
+		return BLUR_MATRIX;
+	}
+	
 	public int getID(){
-		return id;
+		return ID;
 	}
 	
 	/** Wendet die Unschaerfe auf das Bild an. 
 	 */
-	private void blur(String bla) {
-		BufferedImageOp bio = new ConvolveOp(new Kernel(10, 1, BLUR_MATRIX));
-		image = bio.filter(image, null);
-	}
-	
 	private void blur() {
 		WritableRaster unBlurred = image.getRaster();
 		WritableRaster blurred = image.getRaster();
@@ -58,16 +54,16 @@ public class Blur extends Interference {
 		int filterLength = BLUR_MATRIX.length;
 		int halfFilterLength = filterLength/2;
 		
-		for (int i = 0; i < height; i++) {
-			for (int j = halfFilterLength; j < (width - halfFilterLength); j++) {
+		for (int y = 0; y < height; y++) {
+			for (int x = halfFilterLength; x < (width - halfFilterLength); x++) {
 				float newSample = 0f;
 				for (int k = 0; k < filterLength; k++) {
-					int jOffset = - halfFilterLength + k;
-					float sample = unBlurred.getSampleFloat(j + jOffset, i, 0) * BLUR_MATRIX[k];
+					int xOffset = - halfFilterLength + k;
+					float sample = unBlurred.getSampleFloat(x + xOffset, y, 0) * BLUR_MATRIX[k];
 					newSample += sample;
 				}
 				for (int l = 0; l < bands; l++) {
-					blurred.setSample(j, i, l, newSample);
+					blurred.setSample(x, y, l, newSample);
 				}
 			}
 		}
