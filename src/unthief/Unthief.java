@@ -14,9 +14,9 @@ public class Unthief{
 	
 	public Unthief() {
 		Observer v3d = new View3D();
-		//Observer a3d = new Audio3D();
+		Observer a3d = new Audio3D();
 		
-		new MainControl(v3d);
+		new MainControl(v3d,a3d);
 	}
 
 }

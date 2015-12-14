@@ -61,6 +61,8 @@ public class MainControl extends Observable{
 		codeAnalyse();
 		setChanged();
 		notifyObservers(image.getImage().get(image.getImage().size()-1));
+		setChanged();
+		notifyObservers("init");
 	}
 	
 	private void testbild(BufferedImage images){
@@ -116,6 +118,8 @@ public class MainControl extends Observable{
 	 */
 	public void play(String button){
 		if(button.equals("0")){
+			setChanged();
+			notifyObservers("buttonClicked");
 			back();
 			setChanged();
 			notifyObservers(image.getImage().get(image.getImage().size()-1));
@@ -123,10 +127,14 @@ public class MainControl extends Observable{
 		
 		if(button.equals("1")){
 			setChanged();
+			notifyObservers("buttonClicked");
+			setChanged();
 			notifyObservers("help");		
 		}
 		
 		if(button.equals("2")){
+			setChanged();
+			notifyObservers("buttonClicked");
 			Filter increaseContrast= new IncreaseContrast(copyImage(image.getImage().get(image.getImage().size()-1)));
 			image.getImage().add(increaseContrast.getImage());
 			right.add(checkFilter(increaseContrast.getID()));
@@ -143,20 +151,24 @@ public class MainControl extends Observable{
 		}
 		
 		if(button.equals("3")){
-				Filter deBlur= new DeBlur(copyImage(image.getImage().get(image.getImage().size()-1)));
-				image.getImage().add(deBlur.getImage());
-				right.add(checkFilter(deBlur.getID()));
-				if(right.size()>2){
-					setChanged();
-					notifyObservers(right.get(right.size()-2));
-				}
-				if(right.get(right.size()-2)==true){
-					setChanged();
-					notifyObservers(image.getImage().get(image.getImage().size()-1));
-				}
+			setChanged();
+			notifyObservers("buttonClicked");
+			Filter deBlur= new DeBlur(copyImage(image.getImage().get(image.getImage().size()-1)));
+			image.getImage().add(deBlur.getImage());
+			right.add(checkFilter(deBlur.getID()));
+			if(right.size()>2){
+				setChanged();
+				notifyObservers(right.get(right.size()-2));
+			}
+			if(right.get(right.size()-2)==true){
+				setChanged();
+				notifyObservers(image.getImage().get(image.getImage().size()-1));
+			}
 		}
 		
 		if(button.equals("4")){
+			setChanged();
+			notifyObservers("buttonClicked");
 			Filter denoise=new DeNoise(copyImage(image.getImage().get(image.getImage().size()-1)));			
 			image.getImage().add(denoise.getImage());
 			right.add(checkFilter(denoise.getID()));
@@ -174,7 +186,10 @@ public class MainControl extends Observable{
 		
 		if(button.equals("5")){
 			setChanged();
+			notifyObservers("buttonClicked");
+			setChanged();
 			notifyObservers("end");
+			System.exit(0);
 		}
 		if(green==3){
 			System.out.println("gewonnen");
