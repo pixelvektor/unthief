@@ -247,6 +247,7 @@ public class View3D extends MouseAdapter implements Observer {
 	    wrong.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_WRITE );
 	    
 		createSceneGraph(universe);
+		createSceneGraphDisplayCasing(universe);
 		createSceneGraphDisplay(universe);
 		buttons=createSceneGraphButton(universe);
 		
@@ -272,6 +273,45 @@ public class View3D extends MouseAdapter implements Observer {
 		frame.getContentPane().add("Center", myCanvas);
 		
 		frame.setVisible(true);
+	}
+
+	private void createSceneGraphDisplayCasing(SimpleUniverse universe) {
+		BufferedImage newImage = null;
+		try {
+			newImage = ImageIO.read(new FileInputStream("res/action_images/Textur.jpg"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		Appearance displayCasing = new Appearance();
+		TextureLoader loader= new TextureLoader(newImage);
+		ImageComponent2D image = loader.getImage();
+		Texture2D texture = new Texture2D(Texture.BASE_LEVEL, Texture.RGB,image.getWidth(), image.getHeight());
+		texture.setImage(0, image);
+		texture.setBoundaryModeS(Texture.CLAMP_TO_EDGE);
+	    texture.setBoundaryModeT(Texture.CLAMP_TO_EDGE);
+	    texture.setBoundaryColor(new Color4f(0.0f, 1.0f, 0.0f, 0.0f)); 
+	    TextureAttributes texAttr = new TextureAttributes();
+	    texAttr.setTextureMode(TextureAttributes.MODULATE);
+	    displayCasing.setTextureAttributes(texAttr);
+	    displayCasing.setTexture(texture);
+		ObjectFile obj = new ObjectFile();
+		Scene loadedScene = null;
+		
+		// Szene aus Datei einlesen
+		try
+		{
+			loadedScene = obj.load("res/obj/DisplayCasing.obj");
+		} catch (FileNotFoundException | IncorrectFormatException
+				| ParsingErrorException e)
+		{
+			e.printStackTrace();
+		}
+		// Objekt aus geladener Datei auslesen
+		BranchGroup theScene = loadedScene.getSceneGroup();
+		Shape3D shape = (Shape3D) theScene.getChild(0);
+		shape.setAppearance(displayCasing);
+		universe.addBranchGraph(theScene);	
+		
 	}
 
 	/**
