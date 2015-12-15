@@ -22,6 +22,7 @@ public class Audio3D implements Observer {
     static int[] source;
     int[] sourceButton=new int[1];
     static List<float[]> sourcePos= new ArrayList<float[]>();
+    static float[] sourcePosB = { 0.0f, 0.0f, 0.0f };
     static float[] sourcePosT = { 0.0f, 0.0f, 0.0f };
     static float[] sourceVel = { 0.0f, 0.0f, 0.0f };
     static float[] listenerPos = { 0.0f, 0.0f, 0.0f };
@@ -45,19 +46,19 @@ public class Audio3D implements Observer {
         if (al.alGetError() != AL.AL_NO_ERROR) {
             return AL.AL_FALSE;
 	        }
-        System.out.println(buffer.length+"wat");
         for(int index = 0; index <= fileList.size()-1; index++){     
         	String file = PATH + fileList.get(index);
         	ALut.alutLoadWAVFile(file,format,data,size,freq,loop);
         	al.alBufferData(buffer[index],format[0],data[0],size[0],freq[0]);
         	
         }
+        ALut.alutLoadWAVFile("res/audio_bt/277651__coral-island-studios__button-4.wav", format, data, size, freq, loop);
+        al.alBufferData(buffer[fileList.size()], format[0], data[0], size[0], freq[0]);
         
         if (al.alGetError() != AL.AL_NO_ERROR) {
         	System.out.println("wtf");
             return AL.AL_FALSE;
         }
-        System.out.println("end");
         return AL.AL_TRUE;
     }
     
@@ -89,8 +90,8 @@ public class Audio3D implements Observer {
     
     private void init(){
     	fileList = new FileLister(PATH, "wav").getFiles();
-    	buffer=new int[fileList.size()];
-    	source=new int[fileList.size()];
+    	buffer=new int[fileList.size()+1];
+    	source=new int[fileList.size()+1];
     	for(int index = 0; index <= fileList.size()-1; index++){
         	sourcePos.add(randomSource());
     	}
@@ -102,7 +103,7 @@ public class Audio3D implements Observer {
         }
         setListenerValues();
         al.alGenSources(source.length, source, 0);
-
+        
         if (al.alGetError() != AL.AL_NO_ERROR) {
             System.err.println("Error generating audio source.");
             System.exit(1);
@@ -110,6 +111,12 @@ public class Audio3D implements Observer {
         for(int index = 0; index <= fileList.size()-1; index++){
         	addSource(index);
         }
+        al.alSourcei (source[fileList.size()], AL.AL_BUFFER,   buffer[fileList.size()]);
+        al.alSourcef (source[fileList.size()], AL.AL_PITCH,    1.0f         );
+        al.alSourcef (source[fileList.size()], AL.AL_GAIN,     1.0f         );
+        al.alSourcefv(source[fileList.size()], AL.AL_POSITION, sourcePosB    , 0);
+        al.alSourcefv(source[fileList.size()], AL.AL_VELOCITY, sourceVel    , 0);
+        al.alSourcei (source[fileList.size()], AL.AL_LOOPING,  AL.AL_FALSE      );
     }
         
 	private float[] randomSource() {
@@ -123,7 +130,8 @@ public class Audio3D implements Observer {
 	private void play() {
 		Random rand=new Random();
 		int index=rand.nextInt(fileList.size()-1);
-        al.alSourcePlay(index);
+		System.out.print("played");
+        al.alSourcePlay(source[index]);
 	}
 
 	@Override
@@ -134,11 +142,11 @@ public class Audio3D implements Observer {
 			String message=(String)arg1;
 			if(message.equals("init")){
 				init();
-				initButton();
+				//initButton();
 			}
 			if(message.equals("buttonClicked")){
 				System.out.println(message);
-				playButton();
+				//playButton();
 			}
 			if(message.equals("play")){
 				try {
@@ -184,7 +192,7 @@ public class Audio3D implements Observer {
 	}
 
 	private void playButton() {
-		al.alSourcePlay(sourceButton[0]);
+		al.alSourcePlay(source[fileList.size()]);
 	}
 
 }
