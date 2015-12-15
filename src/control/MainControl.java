@@ -18,10 +18,11 @@ import data.DeBlur;
 import data.DeNoise;
 import data.Filter;
 import data.Image;
-import data.IncreaseContrast;
+import data.IncreaseBrightness;
 import data.Interference;
 import data.Noise;
-import data.ReducedContrast;
+import data.ReducedBrightness;
+
 
 public class MainControl extends Observable{
 	/** Bild */
@@ -75,7 +76,7 @@ public class MainControl extends Observable{
 		for(int index=0;index<order.length;index++){
 			System.out.println(order[index]);
 			if(order[index]==5){
-				Interference reducedContrast= new ReducedContrast(copyImage(image.getImage().get(image.getImage().size()-1)));
+				Interference reducedContrast= new ReducedBrightness(copyImage(image.getImage().get(image.getImage().size()-1)));
 				image.getImage().add(reducedContrast.getImage());
 			}
 			if(order[index]==7){
@@ -128,7 +129,7 @@ public class MainControl extends Observable{
 		if(button.equals("2")){
 			setChanged();
 			notifyObservers("buttonClickedRight");
-			Filter increaseContrast= new IncreaseContrast(copyImage(image.getImage().get(image.getImage().size()-1)));
+			Filter increaseContrast= new IncreaseBrightness(copyImage(image.getImage().get(image.getImage().size()-1)));
 			image.getImage().add(increaseContrast.getImage());
 			right.add(checkFilter(increaseContrast.getID()));
 			System.out.println(right.get(right.size()-2)+"!!!2");
