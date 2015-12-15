@@ -38,7 +38,6 @@ import javax.vecmath.Color3f;
 import javax.vecmath.Color4f;
 import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
-import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 import com.sun.j3d.loaders.IncorrectFormatException;
 import com.sun.j3d.loaders.ParsingErrorException;
@@ -171,8 +170,7 @@ public class View3D extends MouseAdapter implements Observer {
 		helpFrame.pack();
 		helpFrame.setTitle("Help");
 		helpFrame.setSize(800, 600);
-		helpFrame.setVisible(true);
-		
+		helpFrame.setVisible(true);	
 	}
 
 	/**
@@ -262,10 +260,8 @@ public class View3D extends MouseAdapter implements Observer {
 		ob.setSchedulingBounds(new BoundingSphere(new Point3d(0.0,0.0,0.0), Double.MAX_VALUE));
 		universe.getViewingPlatform().setViewPlatformBehavior(ob);
 		
-		// Kamera bewegen
 		Transform3D tfCamera = new Transform3D();
 		tfCamera.setTranslation(new Vector3f(0.0f, 0.7f, 3.5f));
-		//tfCamera.lookAt(new Point3d(0.0f, -0.7f, 10.0f), new Point3d(0.0f, -0.7f, 0.0f), new Vector3d(0.0f, 1.0f, 0.0f));
 		tgCamera = universe.getViewingPlatform().getViewPlatformTransform();
 		tgCamera.setTransform(tfCamera);
 		
@@ -298,7 +294,6 @@ public class View3D extends MouseAdapter implements Observer {
 		ObjectFile obj = new ObjectFile();
 		Scene loadedScene = null;
 		
-		// Szene aus Datei einlesen
 		try
 		{
 			loadedScene = obj.load("res/obj/DisplayCasing.obj");
@@ -307,7 +302,7 @@ public class View3D extends MouseAdapter implements Observer {
 		{
 			e.printStackTrace();
 		}
-		// Objekt aus geladener Datei auslesen
+
 		BranchGroup theScene = loadedScene.getSceneGroup();
 		Shape3D shape = (Shape3D) theScene.getChild(0);
 		shape.setAppearance(displayCasing);
@@ -339,7 +334,6 @@ public class View3D extends MouseAdapter implements Observer {
 		ObjectFile obj = new ObjectFile();
 		Scene loadedScene = null;
 		
-		// Szene aus Datei einlesen
 		try
 		{
 			loadedScene = obj.load("res/obj/Body.obj");
@@ -353,7 +347,6 @@ public class View3D extends MouseAdapter implements Observer {
 		BoundingSphere bounds = new BoundingSphere(new Point3d(0.0,0.0,0.0), Double.MAX_VALUE);
 		bg.setApplicationBounds(bounds);
 		
-		// Objekt aus geladener Datei auslesen
 		BranchGroup theScene = loadedScene.getSceneGroup();
 		theScene.addChild(bg);
 		universe.addBranchGraph(theScene);
@@ -367,7 +360,6 @@ public class View3D extends MouseAdapter implements Observer {
 		ObjectFile obj = new ObjectFile();
 		Scene loadedScene = null;
 		
-		// Szene aus Datei einlesen
 		try
 		{
 			loadedScene = obj.load("res/obj/DisplayTest.obj");
@@ -376,7 +368,6 @@ public class View3D extends MouseAdapter implements Observer {
 		{
 			e.printStackTrace();
 		}
-		// Objekt aus geladener Datei auslesen
 		BranchGroup theScene = loadedScene.getSceneGroup();
 		shape = (Shape3D) theScene.getChild(0);
 		shape.setAppearance(display);
@@ -392,7 +383,6 @@ public class View3D extends MouseAdapter implements Observer {
 		ObjectFile obj = new ObjectFile();
 		Scene loadedScene = null;
 		
-		// Szene aus Datei einlesen
 		try
 		{
 			loadedScene = obj.load("res/obj/Button.obj");
@@ -401,7 +391,6 @@ public class View3D extends MouseAdapter implements Observer {
 		{
 			e.printStackTrace();
 		}
-		// Objekt aus geladener Datei auslesen
 		BranchGroup theScene = loadedScene.getSceneGroup();
 		for(int i=0;i<6;i++){
 		Shape3D shape = (Shape3D) theScene.getChild(i);
@@ -425,7 +414,6 @@ public class View3D extends MouseAdapter implements Observer {
 		    }else{
 		       Shape3D s = (Shape3D)result.getNode(PickResult.SHAPE3D);
 		       String name= result.getNode(PickResult.SHAPE3D).getName();
-		       System.out.println(name+getActive(Integer.parseInt(name))+"!!!!!!!!!!!!!!");
 		       if(getActive(Integer.parseInt(name))){
 		    	   if(!name.equals("1")||!name.equals("5")){
 		    		   buttonClicked.add(Integer.parseInt(name));
@@ -433,7 +421,7 @@ public class View3D extends MouseAdapter implements Observer {
 			       if(s !=null){
 				    	subject.play(name);
 				    }else{
-				    	System.out.println("ups!");
+				    	System.out.println("Fatal Error!");
 				    }
 		       }
 		    }   

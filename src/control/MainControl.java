@@ -22,16 +22,10 @@ import data.IncreaseContrast;
 import data.Interference;
 import data.Noise;
 import data.ReducedContrast;
-import data.User;
 
 public class MainControl extends Observable{
-	private User user;
-	private ArrayList<Interference> interference = new ArrayList<>();
-	private ArrayList<Filter> filter = new ArrayList<>();
 	/** Bild */
 	private final Image image;
-	/** true solange das Spiel laeuft. */
-	private boolean isRunning = true;
 	/** Array der Reihenfolge der Stoerungen. */
 	private int order[];
 	/** ArrayList mit Ergebnissen von checkFilter(). */
@@ -56,7 +50,6 @@ public class MainControl extends Observable{
 	 * Initialisiert das Spiel.
 	 */
 	private void gameInit(){
-		this.user = new User("Alice");
 		right.add(true);
 		codeAnalyse();
 		setChanged();
@@ -74,11 +67,7 @@ public class MainControl extends Observable{
 		frame.setVisible(true);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
-	
-	private void gameEnd(){
-		isRunning=false;
-	}
-	
+		
 	/**
 	 * Analysiert den Code und legt die Reihenfolge fest.
 	 */
@@ -119,7 +108,7 @@ public class MainControl extends Observable{
 	public void play(String button){
 		if(button.equals("0")){
 			setChanged();
-			notifyObservers("buttonClicked");
+			notifyObservers("buttonClickedRight");
 			back();
 			setChanged();
 			notifyObservers(image.getImage().get(image.getImage().size()-1));
@@ -129,7 +118,7 @@ public class MainControl extends Observable{
 		
 		if(button.equals("1")){
 			setChanged();
-			notifyObservers("buttonClicked");
+			notifyObservers("buttonClickedLeft");
 			setChanged();
 			notifyObservers("help");
 			setChanged();
@@ -138,7 +127,7 @@ public class MainControl extends Observable{
 		
 		if(button.equals("2")){
 			setChanged();
-			notifyObservers("buttonClicked");
+			notifyObservers("buttonClickedRight");
 			Filter increaseContrast= new IncreaseContrast(copyImage(image.getImage().get(image.getImage().size()-1)));
 			image.getImage().add(increaseContrast.getImage());
 			right.add(checkFilter(increaseContrast.getID()));
@@ -159,18 +148,15 @@ public class MainControl extends Observable{
 		if(button.equals("3")){
 			System.out.println("3");
 			setChanged();
-			notifyObservers("buttonClicked");
+			notifyObservers("buttonClickedRight");
 			Filter deBlur= new DeBlur(copyImage(image.getImage().get(image.getImage().size()-1)));
 			image.getImage().add(deBlur.getImage());
-			System.out.println(deBlur.getID()+"id");
 			right.add(checkFilter(deBlur.getID()));
-			System.out.println(right.get(right.size()-2)+"!!!3");
 			if(right.size()>2){
 				setChanged();
 				notifyObservers(right.get(right.size()-2));
 			}
 			if(right.get(right.size()-2)==true){
-				System.out.println("xx3");
 				setChanged();
 				notifyObservers(image.getImage().get(image.getImage().size()-1));
 			}
@@ -180,17 +166,15 @@ public class MainControl extends Observable{
 		
 		if(button.equals("4")){
 			setChanged();
-			notifyObservers("buttonClicked");
+			notifyObservers("buttonClickedRight");
 			Filter denoise=new DeNoise(copyImage(image.getImage().get(image.getImage().size()-1)));			
 			image.getImage().add(denoise.getImage());
 			right.add(checkFilter(denoise.getID()));
-			System.out.println(right.get(right.size()-2)+"!!!!4");
 			if(right.size()>2){
 				setChanged();
 				notifyObservers(right.get(right.size()-2));
 			}
 			if(right.get(right.size()-2)==true){
-				System.out.println("xx4");
 				setChanged();
 				notifyObservers(image.getImage().get(image.getImage().size()-1));
 			}
@@ -201,13 +185,12 @@ public class MainControl extends Observable{
 		
 		if(button.equals("5")){
 			setChanged();
-			notifyObservers("buttonClicked");
+			notifyObservers("buttonClickedLeft");
 			setChanged();
 			notifyObservers("end");
 			System.exit(0);
 		}
 		if(green==2){
-			System.out.println("gewonnen");
 			setChanged();
 			notifyObservers("win");
 		}
