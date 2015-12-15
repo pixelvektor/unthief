@@ -245,8 +245,8 @@ public class View3D extends MouseAdapter implements Observer {
 	    wrong.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_READ );
 	    wrong.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_WRITE );
 	    
-		createSceneGraph(universe);
-		createSceneGraphDisplayCasing(universe);
+		createBody(universe);
+		createDisplayCasing(universe);
 		createSceneGraphDisplay(universe);
 		buttons=createSceneGraphButton(universe);
 		
@@ -272,7 +272,7 @@ public class View3D extends MouseAdapter implements Observer {
 		frame.setVisible(true);
 	}
 
-	private void createSceneGraphDisplayCasing(SimpleUniverse universe) {
+	private void createDisplayCasing(SimpleUniverse universe) {
 		BufferedImage newImage = null;
 		try {
 			newImage = ImageIO.read(new FileInputStream("res/action_images/Interface.jpg"));
@@ -330,7 +330,7 @@ public class View3D extends MouseAdapter implements Observer {
 	 * Erstellt den Grundkoerper.
 	 * @param universe Das SimpleUniverse.
 	 */
-	private void createSceneGraph(SimpleUniverse universe){
+	private void createBody(SimpleUniverse universe){
 		ObjectFile obj = new ObjectFile();
 		Scene loadedScene = null;
 		
