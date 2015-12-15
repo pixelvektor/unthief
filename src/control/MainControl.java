@@ -140,12 +140,13 @@ public class MainControl extends Observable{
 			Filter increaseContrast= new IncreaseContrast(copyImage(image.getImage().get(image.getImage().size()-1)));
 			image.getImage().add(increaseContrast.getImage());
 			right.add(checkFilter(increaseContrast.getID()));
+			System.out.println(right.get(right.size()-2)+"!!!2");
 			if(right.size()>2){
 				setChanged();
 				notifyObservers(right.get(right.size()-2));
 			}
 			if(right.get(right.size()-2)==true){
-				System.out.println("xx");
+				System.out.println("xx2");
 				setChanged();
 				notifyObservers(image.getImage().get(image.getImage().size()-1));
 			}
@@ -158,11 +159,13 @@ public class MainControl extends Observable{
 			Filter deBlur= new DeBlur(copyImage(image.getImage().get(image.getImage().size()-1)));
 			image.getImage().add(deBlur.getImage());
 			right.add(checkFilter(deBlur.getID()));
+			System.out.println(right.get(right.size()-2)+"!!!3");
 			if(right.size()>2){
 				setChanged();
 				notifyObservers(right.get(right.size()-2));
 			}
 			if(right.get(right.size()-2)==true){
+				System.out.println("xx3");
 				setChanged();
 				notifyObservers(image.getImage().get(image.getImage().size()-1));
 			}
@@ -175,12 +178,13 @@ public class MainControl extends Observable{
 			Filter denoise=new DeNoise(copyImage(image.getImage().get(image.getImage().size()-1)));			
 			image.getImage().add(denoise.getImage());
 			right.add(checkFilter(denoise.getID()));
-			System.out.println(right.size()-2);
+			System.out.println(right.get(right.size()-2)+"!!!!4");
 			if(right.size()>2){
 				setChanged();
 				notifyObservers(right.get(right.size()-2));
 			}
 			if(right.get(right.size()-2)==true){
+				System.out.println("xx4");
 				setChanged();
 				notifyObservers(image.getImage().get(image.getImage().size()-1));
 			}
@@ -194,7 +198,7 @@ public class MainControl extends Observable{
 			notifyObservers("end");
 			System.exit(0);
 		}
-		if(green==3){
+		if(green==2){
 			System.out.println("gewonnen");
 			setChanged();
 			notifyObservers("win");
@@ -213,7 +217,6 @@ public class MainControl extends Observable{
 			if(image.getImage().size()-4==index){
 				if(order[2-index]==id){
 					System.out.println("testBestanden");
-					green=green+1;
 					return true;
 				}else{
 					System.out.println("testNichtBestanden");
@@ -225,7 +228,7 @@ public class MainControl extends Observable{
 	}
 
 	/**
-	 * Einen Schritt zur�ck, bei falscher Eingabe.
+	 * Einen Schritt zurueck, bei falscher Eingabe.
 	 */
 	private void back(){
 		for(int i=0;i<2;i++){
@@ -237,5 +240,10 @@ public class MainControl extends Observable{
 		right.add(true);
 		setChanged();
 		notifyObservers("back");
+	}
+
+	public void setGreen() {
+		green=green+1;
+		
 	}
 }

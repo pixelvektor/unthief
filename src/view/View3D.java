@@ -112,9 +112,11 @@ public class View3D extends MouseAdapter implements Observer {
 					Shape3D button=(Shape3D) buttons.getChild(buttonClicked.get(buttonClicked.size()-2));
 					button.setAppearance(wrong);
 					setActive(0,true);
-					for(int ind=2;ind==4;ind++){
-						setActive(ind,false);
-					}
+					//for(int ind=2;ind==4;ind++){
+						setActive(2,false);
+						setActive(3,false);
+						setActive(4,false);
+					//}
 				}
 			}else{
 				if(!buttons.getChild(buttonClicked.get(buttonClicked.size()-1)).getName().equals("0")){
@@ -123,6 +125,7 @@ public class View3D extends MouseAdapter implements Observer {
 					setActive(Integer.parseInt(buttons.getChild(buttonClicked.get(buttonClicked.size()-2)).getName()), false);
 					setActive(0,false);
 					buttonGreen.add(Integer.parseInt(buttons.getChild(buttonClicked.get(buttonClicked.size()-2)).getName()));
+					subject.setGreen();
 				}
 			}
 		}else if(arg instanceof String){
@@ -131,10 +134,15 @@ public class View3D extends MouseAdapter implements Observer {
 				Shape3D button=(Shape3D) buttons.getChild(buttonClicked.get(buttonClicked.size()-3));
 				button.setAppearance(unClicked);
 				setActive(Integer.parseInt(buttons.getChild(buttonClicked.get(buttonClicked.size()-3)).getName()),true);
-				for(int ind=2;ind<=4;ind++){
-						if(!buttonGreen.contains(ind)){
-						setActive(ind,true);
-					}
+				
+				if(!buttonGreen.contains(2)){
+					setActive(2,true);	
+				}
+				if(!buttonGreen.contains(3)){
+					setActive(3,true);	
+				}
+				if(!buttonGreen.contains(4)){
+					setActive(4,true);	
 				}
 			}
 			if(message.equals("win")){
@@ -410,10 +418,10 @@ public class View3D extends MouseAdapter implements Observer {
 			active3=lever;
 		}
 		if(id==4){
-			active3=lever;
+			active4=lever;
 		}
 		if(id==5){
-			active3=lever;
+			active5=lever;
 		}
 	}
 	
