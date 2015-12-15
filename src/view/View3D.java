@@ -38,6 +38,7 @@ import javax.vecmath.Color3f;
 import javax.vecmath.Color4f;
 import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 import com.sun.j3d.loaders.IncorrectFormatException;
 import com.sun.j3d.loaders.ParsingErrorException;
@@ -160,7 +161,7 @@ public class View3D extends MouseAdapter implements Observer {
 	private void help() {
 		BufferedImage helpImage = null;
 		try {
-			helpImage = ImageIO.read(new FileInputStream("res/action_images/GameOver_2.jpg"));
+			helpImage = ImageIO.read(new FileInputStream("res/action_images/Hilfe.jpg"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -181,7 +182,7 @@ public class View3D extends MouseAdapter implements Observer {
 		win=true;
 		BufferedImage win = null;
 		try {
-			win = ImageIO.read(new FileInputStream("res/action_images/GameOver_1.jpg"));
+			win = ImageIO.read(new FileInputStream("res/action_images/GameOver.jpg"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -263,8 +264,8 @@ public class View3D extends MouseAdapter implements Observer {
 		
 		// Kamera bewegen
 		Transform3D tfCamera = new Transform3D();
-		tfCamera.setTranslation(new Vector3f(0.0f, 0.7f, 10.0f));
-		
+		tfCamera.setTranslation(new Vector3f(0.0f, 0.7f, 3.5f));
+		//tfCamera.lookAt(new Point3d(0.0f, -0.7f, 10.0f), new Point3d(0.0f, -0.7f, 0.0f), new Vector3d(0.0f, 1.0f, 0.0f));
 		tgCamera = universe.getViewingPlatform().getViewPlatformTransform();
 		tgCamera.setTransform(tfCamera);
 		
@@ -278,7 +279,7 @@ public class View3D extends MouseAdapter implements Observer {
 	private void createSceneGraphDisplayCasing(SimpleUniverse universe) {
 		BufferedImage newImage = null;
 		try {
-			newImage = ImageIO.read(new FileInputStream("res/action_images/Textur.jpg"));
+			newImage = ImageIO.read(new FileInputStream("res/action_images/Interface.jpg"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -320,8 +321,8 @@ public class View3D extends MouseAdapter implements Observer {
 	 */
 	private void createLights(SimpleUniverse universe){
 		BoundingSphere bounds = new BoundingSphere(new Point3d(0.0, 0.0, 0.0), Double.MAX_VALUE);
-		Color3f lightColor = new Color3f(0.7f, 0.7f, 0.7f);
-		Point3f lightDirection = new Point3f(0.0f, 0.9f, 1.5f);
+		Color3f lightColor = new Color3f(1.0f, 1.0f, 1.0f);
+		Point3f lightDirection = new Point3f(0.0f, 0.9f, 2.0f);
 		PointLight dLight = new PointLight(true, lightColor, lightDirection, lightDirection);
 		dLight.setInfluencingBounds(bounds);
 		
