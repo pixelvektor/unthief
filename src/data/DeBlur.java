@@ -46,7 +46,7 @@ public class DeBlur extends Filter {
 			for (int x = halfFilterLength; x < (width - halfFilterLength); x++) {
 				float oldSample = blurred.getSampleFloat(x, y, 0);
 				for (int k = 0; k < filterLength; k++) {
-					float newSample = oldSample / BLUR_MATRIX[k];
+					float newSample = oldSample * BLUR_MATRIX[k];
 					int xOffset = - halfFilterLength + k;
 					for (int l = 0; l < bands; l++) {
 						float tmpSample = unBlurred.getSampleFloat(x + xOffset, y, l);
