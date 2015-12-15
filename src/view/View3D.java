@@ -43,7 +43,6 @@ import com.sun.j3d.loaders.IncorrectFormatException;
 import com.sun.j3d.loaders.ParsingErrorException;
 import com.sun.j3d.loaders.Scene;
 import com.sun.j3d.loaders.objectfile.ObjectFile;
-import com.sun.j3d.utils.behaviors.vp.OrbitBehavior;
 import com.sun.j3d.utils.image.TextureLoader;
 import com.sun.j3d.utils.picking.PickCanvas;
 import com.sun.j3d.utils.picking.PickResult;
@@ -82,17 +81,9 @@ public class View3D extends MouseAdapter implements Observer {
 		if(subject==null)
 			subject = (MainControl) o;
 		if(arg instanceof BufferedImage){
+			image=(BufferedImage) arg;
 			if(init==1){
-				image=(BufferedImage) arg;
-				TextureLoader loader= new TextureLoader(image);
-				ImageComponent2D texImage = loader.getImage();
-				Texture2D texture = new Texture2D(Texture.BASE_LEVEL, Texture.RGB,texImage.getWidth(), texImage.getHeight());
-				texture.setImage(0, texImage);
-				texture.setBoundaryModeS(Texture.CLAMP_TO_EDGE);
-			    texture.setBoundaryModeT(Texture.CLAMP_TO_EDGE);
-			    texture.setBoundaryColor(new Color4f(0.0f, 1.0f, 0.0f, 0.0f));
-				textureUnitState[0].setTexture(texture);
-				
+				changeDisplayTexture();
 				if(!buttons.getChild(buttonClicked.get(buttonClicked.size()-1)).getName().equals("0")){
 					Shape3D button=(Shape3D) buttons.getChild(buttonClicked.get(buttonClicked.size()-1));
 					button.setAppearance(clicked);
@@ -101,39 +92,31 @@ public class View3D extends MouseAdapter implements Observer {
 				}
 			}
 			if(init==0){
-				image=(BufferedImage) arg;
 				init();
 				init++;
 			}
 		}else if(arg instanceof Boolean){
 			Boolean check=(Boolean) arg;
 			if(check==false){
-				if(!buttons.getChild(buttonClicked.get(buttonClicked.size()-1)).getName().equals("0")){
-					Shape3D button=(Shape3D) buttons.getChild(buttonClicked.get(buttonClicked.size()-2));
-					button.setAppearance(wrong);
-					setActive(0,true);
-					//for(int ind=2;ind==4;ind++){
-						setActive(2,false);
-						setActive(3,false);
-						setActive(4,false);
-					//}
+				Shape3D button=(Shape3D) buttons.getChild(buttonClicked.get(buttonClicked.size()-2));
+				button.setAppearance(wrong);
+				setActive(0,true);
+				for(int ind=2;ind<=4;ind++){
+					setActive(ind,false);
 				}
 			}else{
-				if(!buttons.getChild(buttonClicked.get(buttonClicked.size()-1)).getName().equals("0")){
-					Shape3D button=(Shape3D) buttons.getChild(buttonClicked.get(buttonClicked.size()-2));
-					button.setAppearance(right);
-					setActive(Integer.parseInt(buttons.getChild(buttonClicked.get(buttonClicked.size()-2)).getName()), false);
-					setActive(0,false);
-					buttonGreen.add(Integer.parseInt(buttons.getChild(buttonClicked.get(buttonClicked.size()-2)).getName()));
-					subject.setGreen();
-				}
+				Shape3D button=(Shape3D) buttons.getChild(buttonClicked.get(buttonClicked.size()-2));
+				button.setAppearance(right);
+				setActive(Integer.parseInt(buttons.getChild(buttonClicked.get(buttonClicked.size()-2)).getName()), false);
+				setActive(0,false);
+				buttonGreen.add(Integer.parseInt(buttons.getChild(buttonClicked.get(buttonClicked.size()-2)).getName()));
+				subject.setGreen();
 			}
 		}else if(arg instanceof String){
 			String message=(String) arg;
 			if(message.equals("back")){
 				Shape3D button=(Shape3D) buttons.getChild(buttonClicked.get(buttonClicked.size()-3));
 				button.setAppearance(unClicked);
-				setActive(Integer.parseInt(buttons.getChild(buttonClicked.get(buttonClicked.size()-3)).getName()),true);
 				
 				if(!buttonGreen.contains(2)){
 					setActive(2,true);	
@@ -153,20 +136,24 @@ public class View3D extends MouseAdapter implements Observer {
 			if(message.equals("help")){
 				help();
 			}
-		}
-		
+		}	
 	}
 	
+	private void changeDisplayTexture() {
+		TextureLoader loader= new TextureLoader(image);
+		ImageComponent2D texImage = loader.getImage();
+		Texture2D texture = new Texture2D(Texture.BASE_LEVEL, Texture.RGB,texImage.getWidth(), texImage.getHeight());
+		texture.setImage(0, texImage);
+		texture.setBoundaryModeS(Texture.CLAMP_TO_EDGE);
+	    texture.setBoundaryModeT(Texture.CLAMP_TO_EDGE);
+	    texture.setBoundaryColor(new Color4f(0.0f, 1.0f, 0.0f, 0.0f));
+		textureUnitState[0].setTexture(texture);
+	}
+
 	private void help() {
-		BufferedImage helpImage = null;
-		try {
-			helpImage = ImageIO.read(new FileInputStream("res/action_images/Hilfe.jpg"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 		JFrame helpFrame = new JFrame();
 		helpFrame.getContentPane().setLayout(new FlowLayout());
-		helpFrame.getContentPane().add(new JLabel(new ImageIcon(helpImage)));
+		helpFrame.getContentPane().add(new JLabel(new ImageIcon(loadImage("Hilfe.jpg"))));
 		helpFrame.pack();
 		helpFrame.setTitle("Help");
 		helpFrame.setSize(800, 600);
@@ -178,15 +165,9 @@ public class View3D extends MouseAdapter implements Observer {
 	 */
 	private void win() {
 		win=true;
-		BufferedImage win = null;
-		try {
-			win = ImageIO.read(new FileInputStream("res/action_images/GameOver.jpg"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 		JFrame winFrame = new JFrame();
 		winFrame.getContentPane().setLayout(new FlowLayout());
-		winFrame.getContentPane().add(new JLabel(new ImageIcon(win)));
+		winFrame.getContentPane().add(new JLabel(new ImageIcon(loadImage("GameOver.jpg"))));
 		winFrame.pack();
 		winFrame.setTitle("Win");
 		winFrame.setSize(800, 600);
@@ -198,14 +179,55 @@ public class View3D extends MouseAdapter implements Observer {
 	 * Initialisiert die View.
 	 */
 	private void init(){
-		JFrame frame=new JFrame();
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		JFrame mainFrame=new JFrame();
+		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		myCanvas = new Canvas3D(SimpleUniverse.getPreferredConfiguration());
 		
 		SimpleUniverse universe = new SimpleUniverse(myCanvas);
 		universe.getViewingPlatform().setNominalViewingTransform();
 		
+		loadDisplayTexture();
+		 
+	    Color3f colClicked = new Color3f(1.0f, 1.0f, 1.0f);
+		ColoringAttributes colAtClicked = new ColoringAttributes(colClicked, ColoringAttributes.NICEST);
+		clicked.setColoringAttributes(colAtClicked);
+		
+	    Color3f colUnClicked = new Color3f(0.2f, 0.2f, 0.2f);
+		ColoringAttributes colAtUnClicked = new ColoringAttributes(colUnClicked, ColoringAttributes.NICEST);
+		unClicked.setColoringAttributes(colAtUnClicked);
+	    
+	    Color3f colRight = new Color3f(0.0f, 1.0f, 0.0f);
+		ColoringAttributes colAtRight = new ColoringAttributes(colRight, ColoringAttributes.NICEST);
+		right.setColoringAttributes(colAtRight);
+	    
+	    Color3f colWrong = new Color3f(1.0f, 0.0f, 0.0f);
+		ColoringAttributes colAtWrong = new ColoringAttributes(colWrong, ColoringAttributes.NICEST);
+		wrong.setColoringAttributes(colAtWrong);
+	    
+		createBody(universe);
+		createDisplayCasing(universe);
+		createDisplay(universe);
+		buttons=createButton(universe);
+		
+	    pickCanvas= new PickCanvas(myCanvas, buttons);
+		pickCanvas.setMode(PickCanvas.BOUNDS);
+		myCanvas.addMouseListener((MouseListener) this);
+	    
+		createLights(universe);
+		
+		Transform3D tfCamera = new Transform3D();
+		tfCamera.setTranslation(new Vector3f(0.0f, 0.7f, 3.5f));
+		tgCamera = universe.getViewingPlatform().getViewPlatformTransform();
+		tgCamera.setTransform(tfCamera);
+		
+		mainFrame.setTitle("Unthief");
+		mainFrame.setSize(1280, 720);
+		mainFrame.getContentPane().add("Center", myCanvas);
+		mainFrame.setVisible(true);
+	}
+
+	private void loadDisplayTexture() {
 		TextureLoader loader= new TextureLoader(image);
 		ImageComponent2D image = loader.getImage();
 		Texture2D texture = new Texture2D(Texture.BASE_LEVEL, Texture.RGB,image.getWidth(), image.getHeight());
@@ -220,67 +242,11 @@ public class View3D extends MouseAdapter implements Observer {
 	    display.setTextureUnitState(textureUnitState);
 	    display.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_READ );
 	    display.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_WRITE );
-	    
-	    Color3f colClicked = new Color3f(1.0f, 1.0f, 1.0f);
-		ColoringAttributes colAtClicked = new ColoringAttributes(colClicked, ColoringAttributes.NICEST);
-		clicked.setColoringAttributes(colAtClicked);
-	    clicked.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_READ );
-	    clicked.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_WRITE );
-	    
-	    Color3f colUnClicked = new Color3f(0.2f, 0.2f, 0.2f);
-		ColoringAttributes colAtUnClicked = new ColoringAttributes(colUnClicked, ColoringAttributes.NICEST);
-		unClicked.setColoringAttributes(colAtUnClicked);
-		unClicked.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_READ );
-		unClicked.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_WRITE );
-	    
-	    Color3f colRight = new Color3f(0.0f, 1.0f, 0.0f);
-		ColoringAttributes colAtRight = new ColoringAttributes(colRight, ColoringAttributes.NICEST);
-		right.setColoringAttributes(colAtRight);
-	    right.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_READ );
-	    right.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_WRITE );
-	    
-	    Color3f colWrong = new Color3f(1.0f, 0.0f, 0.0f);
-		ColoringAttributes colAtWrong = new ColoringAttributes(colWrong, ColoringAttributes.NICEST);
-		wrong.setColoringAttributes(colAtWrong);
-	    wrong.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_READ );
-	    wrong.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_WRITE );
-	    
-		createBody(universe);
-		createDisplayCasing(universe);
-		createSceneGraphDisplay(universe);
-		buttons=createSceneGraphButton(universe);
-		
-	    pickCanvas= new PickCanvas(myCanvas, buttons);
-		pickCanvas.setMode(PickCanvas.BOUNDS);
-		myCanvas.addMouseListener((MouseListener) this);
-	    
-		createLights(universe);
-		
-		OrbitBehavior ob = new OrbitBehavior(myCanvas);
-		ob.setSchedulingBounds(new BoundingSphere(new Point3d(0.0,0.0,0.0), Double.MAX_VALUE));
-		universe.getViewingPlatform().setViewPlatformBehavior(ob);
-		
-		Transform3D tfCamera = new Transform3D();
-		tfCamera.setTranslation(new Vector3f(0.0f, 0.7f, 3.5f));
-		tgCamera = universe.getViewingPlatform().getViewPlatformTransform();
-		tgCamera.setTransform(tfCamera);
-		
-		frame.setTitle("Unthief");
-		frame.setSize(1280, 720);
-		frame.getContentPane().add("Center", myCanvas);
-		
-		frame.setVisible(true);
 	}
 
 	private void createDisplayCasing(SimpleUniverse universe) {
-		BufferedImage newImage = null;
-		try {
-			newImage = ImageIO.read(new FileInputStream("res/action_images/Interface.jpg"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 		Appearance displayCasing = new Appearance();
-		TextureLoader loader= new TextureLoader(newImage);
+		TextureLoader loader= new TextureLoader(loadImage("Interface.jpg"));
 		ImageComponent2D image = loader.getImage();
 		Texture2D texture = new Texture2D(Texture.BASE_LEVEL, Texture.RGB,image.getWidth(), image.getHeight());
 		texture.setImage(0, image);
@@ -356,7 +322,7 @@ public class View3D extends MouseAdapter implements Observer {
 	 * Erstellt das Display.
 	 * @param universe Das SimpleUniverse.
 	 */
-	private void createSceneGraphDisplay(SimpleUniverse universe){
+	private void createDisplay(SimpleUniverse universe){
 		ObjectFile obj = new ObjectFile();
 		Scene loadedScene = null;
 		
@@ -379,7 +345,7 @@ public class View3D extends MouseAdapter implements Observer {
 	 * @param universe Das SimpleUniverse.
 	 * @return die Buttons.
 	 */
-	private BranchGroup createSceneGraphButton(SimpleUniverse universe){
+	private BranchGroup createButton(SimpleUniverse universe){
 		ObjectFile obj = new ObjectFile();
 		Scene loadedScene = null;
 		
@@ -415,8 +381,10 @@ public class View3D extends MouseAdapter implements Observer {
 		       Shape3D s = (Shape3D)result.getNode(PickResult.SHAPE3D);
 		       String name= result.getNode(PickResult.SHAPE3D).getName();
 		       if(getActive(Integer.parseInt(name))){
-		    	   if(!name.equals("1")||!name.equals("5")){
-		    		   buttonClicked.add(Integer.parseInt(name));
+		    	   if(!name.equals("1")){
+		    		   if(!name.equals("5")){
+		    			   buttonClicked.add(Integer.parseInt(name));
+		    		   }
 		    	   }
 			       if(s !=null){
 				    	subject.play(name);
@@ -479,5 +447,15 @@ public class View3D extends MouseAdapter implements Observer {
 			return active5;
 		}
 		return true;
+	}
+	
+	private BufferedImage loadImage(String name){
+		BufferedImage newImage = null;
+		try {
+			newImage = ImageIO.read(new FileInputStream("res/action_images/"+name));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return newImage;
 	}
 }
