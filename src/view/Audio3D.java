@@ -142,11 +142,10 @@ public class Audio3D implements Observer {
 			String message=(String)arg1;
 			if(message.equals("init")){
 				init();
-				//initButton();
 			}
 			if(message.equals("buttonClicked")){
 				System.out.println(message);
-				//playButton();
+				playButton();
 			}
 			if(message.equals("play")){
 				try {
@@ -161,34 +160,6 @@ public class Audio3D implements Observer {
 				killAllData();
 			}		
 		}
-	}
-
-	private void initButton() {
-		int[] buffer=new int[1];
-		float[] sourcePos = { 0.0f, 0.0f, 0.0f };
-	    float[] sourceVel = { 0.0f, 0.0f, 0.0f };
-	    int[] format = new int[1];
-        int[] size = new int[1];
-        ByteBuffer[] data = new ByteBuffer[1];
-        int[] freq = new int[1];
-        int[] loop = new int[1];
-	    al.alGenBuffers(1, buffer, 0);
-	    ALut.alutLoadWAVFile("res/audio_bt/277651__coral-island-studios__button-4.wav", format, data, size, freq, loop);
-        al.alBufferData(buffer[0], format[0], data[0], size[0], freq[0]);
-	    al.alGenSources(1, sourceButton, 0);
-
-        if (al.alGetError() != AL.AL_NO_ERROR) {
-            System.err.println("Error generating audio source.");
-            System.exit(1);
-        }
-
-        al.alSourcei (sourceButton[0], AL.AL_BUFFER,   buffer[0]);
-        al.alSourcef (sourceButton[0], AL.AL_PITCH,    1.0f         );
-        al.alSourcef (sourceButton[0], AL.AL_GAIN,     1.0f         );
-        al.alSourcefv(sourceButton[0], AL.AL_POSITION, sourcePos    , 0);
-        al.alSourcefv(sourceButton[0], AL.AL_VELOCITY, sourceVel    , 0);
-        al.alSourcei (sourceButton[0], AL.AL_LOOPING,  AL.AL_FALSE      );
-        
 	}
 
 	private void playButton() {

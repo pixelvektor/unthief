@@ -114,7 +114,7 @@ public class MainControl extends Observable{
 	
 	/**
 	 * Definiert die Reaktion auf einen gedrueckten Button.
-	 * @param button der gedr�ckte Button.
+	 * @param button der gedrueckte Button.
 	 */
 	public void play(String button){
 		if(button.equals("0")){
