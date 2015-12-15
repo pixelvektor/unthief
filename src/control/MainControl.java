@@ -123,6 +123,8 @@ public class MainControl extends Observable{
 			back();
 			setChanged();
 			notifyObservers(image.getImage().get(image.getImage().size()-1));
+			setChanged();
+			notifyObservers("play");
 		}
 		
 		if(button.equals("1")){
@@ -150,13 +152,17 @@ public class MainControl extends Observable{
 				setChanged();
 				notifyObservers(image.getImage().get(image.getImage().size()-1));
 			}
+			setChanged();
+			notifyObservers("play");
 		}
 		
 		if(button.equals("3")){
+			System.out.println("3");
 			setChanged();
 			notifyObservers("buttonClicked");
 			Filter deBlur= new DeBlur(copyImage(image.getImage().get(image.getImage().size()-1)));
 			image.getImage().add(deBlur.getImage());
+			System.out.println(deBlur.getID()+"id");
 			right.add(checkFilter(deBlur.getID()));
 			System.out.println(right.get(right.size()-2)+"!!!3");
 			if(right.size()>2){
@@ -168,6 +174,8 @@ public class MainControl extends Observable{
 				setChanged();
 				notifyObservers(image.getImage().get(image.getImage().size()-1));
 			}
+			setChanged();
+			notifyObservers("play");
 		}
 		
 		if(button.equals("4")){
@@ -186,6 +194,8 @@ public class MainControl extends Observable{
 				setChanged();
 				notifyObservers(image.getImage().get(image.getImage().size()-1));
 			}
+			setChanged();
+			notifyObservers("play");
 			
 		}
 		
@@ -212,7 +222,7 @@ public class MainControl extends Observable{
 	 */
 	private boolean checkFilter(int id){
 		for(int index=0; index<3;index++){
-			if(image.getImage().size()-4==index){
+			if(image.getImage().size()-5==index){
 				if(order[2-index]==id){
 					System.out.println("testBestanden");
 					return true;
