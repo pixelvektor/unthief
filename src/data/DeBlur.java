@@ -10,7 +10,7 @@ import org.apache.commons.math3.transform.TransformType;
 
 public class DeBlur extends Filter {
 	private final BufferedImage image;
-	private static final float[] BLUR_MATRIX =  Blur.getBlurMatrix();
+	private static final Complex[] BLUR_MATRIX =  Blur.getBlurMatrix();
 	private static final int ID = 2;
 	
 	public DeBlur(final BufferedImage image){
@@ -37,12 +37,7 @@ public class DeBlur extends Filter {
 		int width = image.getWidth();
 		int height = image.getHeight();
 		int n = width * height;
-		int fillSpace = 0;
-		
-		for (int mask = 1; mask < n; mask <<= 1) {
-			fillSpace = mask;
-		}
-		fillSpace = fillSpace * 2 - n;
+		int fillSpace = Blur.fillSpace(n);
 		
 		Complex[] f = new Complex[n + fillSpace];
 		
@@ -58,11 +53,12 @@ public class DeBlur extends Filter {
 		
 		fft.transform(f, TransformType.FORWARD);
 		
+		
 		//TODO DeBlur
 		
-		for (int l = 0; l < f.length; l++) {
+		/*for (int l = 0; l < f.length; l++) {
 			System.out.println("^f[" + l + "] = " + f[l]);
-		}
+		}*/
 		
 		fft.transform(f, TransformType.INVERSE);
 		
@@ -75,6 +71,7 @@ public class DeBlur extends Filter {
 		}
 	}
 	
+	/*
 	@Deprecated
 	private void deBlurOld() {
 		WritableRaster blurred = image.getRaster();
@@ -109,4 +106,5 @@ public class DeBlur extends Filter {
 		}
 		image.setData(unBlurred);
 	}
+	*/
 }

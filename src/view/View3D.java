@@ -423,7 +423,7 @@ public class View3D extends MouseAdapter implements Observer {
 	}
 	
 	/**
-	 * Getter für den Status des Buttons.
+	 * Getter fï¿½r den Status des Buttons.
 	 * @param id ID des Buttons.
 	 * @return Der Status des Buttons.
 	 */
