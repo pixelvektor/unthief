@@ -95,12 +95,12 @@ public class MainControl extends Observable{
 	 * @param image das zu kopierende Bild.
 	 * @return das kopierte Bild.
 	 */
-	static BufferedImage copyImage(BufferedImage image){
+	public static BufferedImage copyImage(BufferedImage image){
 		 ColorModel colorModel = image.getColorModel();
 		 boolean isAlphaPremultiplied = colorModel.isAlphaPremultiplied();
 		 WritableRaster raster = image.copyData(null);
 		 return new BufferedImage(colorModel, raster, isAlphaPremultiplied, null);
-		}
+	}
 	
 	/**
 	 * Definiert die Reaktion auf einen gedrueckten Button.
