@@ -1,5 +1,10 @@
 package control;
 
+/** Hochschule Hamm-Lippstadt
+ * Praktikum Visual Computing I (Unthief)
+ * (C) 2015 Kevin Otte, Adrian Schmidt, Fabian Schneider
+ */
+
 import java.awt.FlowLayout;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -48,49 +53,6 @@ public class MainControl extends Observable{
 	}
 	
 	/**
-	 * Initialisiert das Spiel.
-	 */
-	private void gameInit(){
-		right.add(true);
-		codeAnalyse();
-		setChanged();
-		notifyObservers(image.getImage().get(image.getImage().size()-1));
-		setChanged();
-		notifyObservers("init");
-	}
-	
-	private void testbild(BufferedImage images){
-		
-		JFrame frame = new JFrame();
-		frame.getContentPane().setLayout(new FlowLayout());
-		frame.getContentPane().add(new JLabel(new ImageIcon(images)));
-		frame.pack();
-		frame.setVisible(true);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	}
-		
-	/**
-	 * Analysiert den Code und legt die Reihenfolge fest.
-	 */
-	private void codeAnalyse(){
-		for(int index=0;index<order.length;index++){
-			System.out.println(order[index]);
-			if(order[index]==5){
-				Interference reducedContrast= new ReducedBrightness(copyImage(image.getImage().get(image.getImage().size()-1)));
-				image.getImage().add(reducedContrast.getImage());
-			}
-			if(order[index]==7){
-				Interference noise=new Noise(copyImage(image.getImage().get(image.getImage().size()-1)));
-				image.getImage().add(noise.getImage());
-			}
-			if(order[index]==2){
-				Interference blur = new Blur(copyImage(image.getImage().get(image.getImage().size()-1)));
-				image.getImage().add(blur.getImage());
-			}
-		}
-	}
-	
-	/**
 	 * Kopiert Bilder.
 	 * @param image das zu kopierende Bild.
 	 * @return das kopierte Bild.
@@ -101,7 +63,7 @@ public class MainControl extends Observable{
 		 WritableRaster raster = image.copyData(null);
 		 return new BufferedImage(colorModel, raster, isAlphaPremultiplied, null);
 	}
-	
+
 	/**
 	 * Definiert die Reaktion auf einen gedrueckten Button.
 	 * @param button der gedrueckte Button.
@@ -199,6 +161,57 @@ public class MainControl extends Observable{
 	}
 	
 	/**
+	 * Counter fuer die richtigen Buttons.
+	 */
+	public void setGreen() {
+		green=green+1;
+		
+	}
+
+	/**
+	 * Initialisiert das Spiel.
+	 */
+	private void gameInit(){
+		right.add(true);
+		codeAnalyse();
+		setChanged();
+		notifyObservers(image.getImage().get(image.getImage().size()-1));
+		setChanged();
+		notifyObservers("init");
+	}
+	
+	private void testbild(BufferedImage images){
+		
+		JFrame frame = new JFrame();
+		frame.getContentPane().setLayout(new FlowLayout());
+		frame.getContentPane().add(new JLabel(new ImageIcon(images)));
+		frame.pack();
+		frame.setVisible(true);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+		
+	/**
+	 * Analysiert den Code und legt die Reihenfolge fest.
+	 */
+	private void codeAnalyse(){
+		for(int index=0;index<order.length;index++){
+			System.out.println(order[index]);
+			if(order[index]==5){
+				Interference reducedContrast= new ReducedBrightness(copyImage(image.getImage().get(image.getImage().size()-1)));
+				image.getImage().add(reducedContrast.getImage());
+			}
+			if(order[index]==7){
+				Interference noise=new Noise(copyImage(image.getImage().get(image.getImage().size()-1)));
+				image.getImage().add(noise.getImage());
+			}
+			if(order[index]==2){
+				Interference blur = new Blur(copyImage(image.getImage().get(image.getImage().size()-1)));
+				image.getImage().add(blur.getImage());
+			}
+		}
+	}
+	
+	/**
 	 * Ueberprueft ob die Filter in der richtigen Reihenfolge angewandt worden sind. 
 	 * @param id ID des Filters.
 	 * @return true, wenn in der richtigen Reihenfolge.
@@ -232,10 +245,5 @@ public class MainControl extends Observable{
 		right.add(true);
 		setChanged();
 		notifyObservers("back");
-	}
-
-	public void setGreen() {
-		green=green+1;
-		
 	}
 }

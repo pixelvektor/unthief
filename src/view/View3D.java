@@ -1,5 +1,10 @@
 package view;
 
+/** Hochschule Hamm-Lippstadt
+ * Praktikum Visual Computing I (Unthief)
+ * (C) 2015 Kevin Otte, Adrian Schmidt, Fabian Schneider
+ */
+
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
@@ -49,23 +54,41 @@ import com.sun.j3d.utils.picking.PickResult;
 import com.sun.j3d.utils.universe.SimpleUniverse;
 
 public class View3D extends MouseAdapter implements Observer {
+	/** Das Observabel. */
 	private MainControl subject;
+	/** Das Canvas. */
 	private Canvas3D myCanvas;
+	/** Die Kamera. */
 	private TransformGroup tgCamera;
+	/** Das Displaybild. */
 	private BufferedImage image;
+	/** Das Display. */
 	private Shape3D shape;
+	/** Canvas zum Anklicken. */
 	private PickCanvas pickCanvas;
+	/** Initialisierungswert. */
 	private int init=0;
+	/** Appearance des Displays. */
 	private Appearance display = new Appearance();
+	/** Appearance des ungeklickten Buttons. */ 
 	private Appearance unClicked = new Appearance();
+	/** Appearance des geklickten Buttons. */
 	private Appearance clicked = new Appearance();
+	/** Appearance des richtig gedrueckten Buttons. */
 	private Appearance right = new Appearance();
+	/** Appearance des falsch gedrueckten Buttons. */
 	private Appearance wrong = new Appearance();
+	/** Status der Textur des Displays. */
 	private TextureUnitState textureUnitState[] = new TextureUnitState[1];
+	/** BranchGroup der Buttons. */
 	private BranchGroup buttons;
+	/** Liste der gedrueckten Buttons */
 	private ArrayList<Integer> buttonClicked= new ArrayList<Integer>();
+	/** Liste der richtig gedrueckten Buttons. */
 	private ArrayList<Integer> buttonGreen= new ArrayList<Integer>();
+	/** Ob das Spiel gewonnen wurde. */
 	private Boolean win=false;
+	/** Ob Button aktiv ist. */
 	private boolean active0=false;
 	private boolean active1=true;
 	private boolean active2=true;
@@ -139,42 +162,34 @@ public class View3D extends MouseAdapter implements Observer {
 		}	
 	}
 	
-	private void changeDisplayTexture() {
-		TextureLoader loader= new TextureLoader(image);
-		ImageComponent2D texImage = loader.getImage();
-		Texture2D texture = new Texture2D(Texture.BASE_LEVEL, Texture.RGB,texImage.getWidth(), texImage.getHeight());
-		texture.setImage(0, texImage);
-		texture.setBoundaryModeS(Texture.CLAMP_TO_EDGE);
-	    texture.setBoundaryModeT(Texture.CLAMP_TO_EDGE);
-	    texture.setBoundaryColor(new Color4f(0.0f, 1.0f, 0.0f, 0.0f));
-		textureUnitState[0].setTexture(texture);
-	}
-
-	private void help() {
-		JFrame helpFrame = new JFrame();
-		helpFrame.getContentPane().setLayout(new FlowLayout());
-		helpFrame.getContentPane().add(new JLabel(new ImageIcon(loadImage("Hilfe.jpg"))));
-		helpFrame.pack();
-		helpFrame.setTitle("Help");
-		helpFrame.setSize(800, 600);
-		helpFrame.setVisible(true);	
-	}
-
 	/**
-	 * Gibt Gewinnmitteilung aus.
+	 * Wird bei Mausklick ausgefuehrt.
 	 */
-	private void win() {
-		win=true;
-		JFrame winFrame = new JFrame();
-		winFrame.getContentPane().setLayout(new FlowLayout());
-		winFrame.getContentPane().add(new JLabel(new ImageIcon(loadImage("GameOver.jpg"))));
-		winFrame.pack();
-		winFrame.setTitle("Win");
-		winFrame.setSize(800, 600);
-		winFrame.setVisible(true);
-		winFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	public void mouseClicked(MouseEvent e){
+		if(win==false){
+		    pickCanvas.setShapeLocation(e);
+		    PickResult result = pickCanvas.pickClosest();
+		    if(result == null){
+		       System.out.println("Nothing picked");
+		    }else{
+		       Shape3D s = (Shape3D)result.getNode(PickResult.SHAPE3D);
+		       String name= result.getNode(PickResult.SHAPE3D).getName();
+		       if(getActive(Integer.parseInt(name))){
+		    	   if(!name.equals("1")){
+		    		   if(!name.equals("5")){
+		    			   buttonClicked.add(Integer.parseInt(name));
+		    		   }
+		    	   }
+			       if(s !=null){
+				    	subject.play(name);
+				    }else{
+				    	System.out.println("Fatal Error!");
+				    }
+		       }
+		    }   
+		}
 	}
-	
+
 	/**
 	 * Initialisiert die View.
 	 */
@@ -227,6 +242,9 @@ public class View3D extends MouseAdapter implements Observer {
 		mainFrame.setVisible(true);
 	}
 
+	/**
+	 * Initialisiert die Display-Textur.
+	 */
 	private void loadDisplayTexture() {
 		TextureLoader loader= new TextureLoader(image);
 		ImageComponent2D image = loader.getImage();
@@ -244,6 +262,41 @@ public class View3D extends MouseAdapter implements Observer {
 	    display.setCapability( Appearance.ALLOW_TEXTURE_UNIT_STATE_WRITE );
 	}
 
+	/**
+	 * Laed Bilddateien.
+	 * @param name der Bilddatei.
+	 * @return das geladene Bild.
+	 */
+	private BufferedImage loadImage(String name){
+		BufferedImage newImage = null;
+		try {
+			newImage = ImageIO.read(new FileInputStream("res/action_images/"+name));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return newImage;
+	}
+
+	/**
+	 * Erstellt die Lichter der Szene.
+	 * @param universe Das SimpleUniverse.
+	 */
+	private void createLights(SimpleUniverse universe){
+		BoundingSphere bounds = new BoundingSphere(new Point3d(0.0, 0.0, 0.0), Double.MAX_VALUE);
+		Color3f lightColor = new Color3f(1.0f, 1.0f, 1.0f);
+		Point3f lightDirection = new Point3f(0.0f, 0.9f, 2.0f);
+		PointLight dLight = new PointLight(true, lightColor, lightDirection, lightDirection);
+		dLight.setInfluencingBounds(bounds);
+		
+		BranchGroup lights = new BranchGroup();
+		lights.addChild(dLight);
+		universe.addBranchGraph(lights);
+	}
+
+	/**
+	 * Erstellt den Rahmen des Displays.
+	 * @param universe Das SimpleUniverse.
+	 */
 	private void createDisplayCasing(SimpleUniverse universe) {
 		Appearance displayCasing = new Appearance();
 		TextureLoader loader= new TextureLoader(loadImage("Interface.jpg"));
@@ -268,7 +321,7 @@ public class View3D extends MouseAdapter implements Observer {
 		{
 			e.printStackTrace();
 		}
-
+	
 		BranchGroup theScene = loadedScene.getSceneGroup();
 		Shape3D shape = (Shape3D) theScene.getChild(0);
 		shape.setAppearance(displayCasing);
@@ -276,22 +329,6 @@ public class View3D extends MouseAdapter implements Observer {
 		
 	}
 
-	/**
-	 * Erstellt die Lichter der Szene.
-	 * @param universe Das SimpleUniverse.
-	 */
-	private void createLights(SimpleUniverse universe){
-		BoundingSphere bounds = new BoundingSphere(new Point3d(0.0, 0.0, 0.0), Double.MAX_VALUE);
-		Color3f lightColor = new Color3f(1.0f, 1.0f, 1.0f);
-		Point3f lightDirection = new Point3f(0.0f, 0.9f, 2.0f);
-		PointLight dLight = new PointLight(true, lightColor, lightDirection, lightDirection);
-		dLight.setInfluencingBounds(bounds);
-		
-		BranchGroup lights = new BranchGroup();
-		lights.addChild(dLight);
-		universe.addBranchGraph(lights);
-	}
-	
 	/**
 	 * Erstellt den Grundkoerper.
 	 * @param universe Das SimpleUniverse.
@@ -317,7 +354,7 @@ public class View3D extends MouseAdapter implements Observer {
 		theScene.addChild(bg);
 		universe.addBranchGraph(theScene);
 	}
-	
+
 	/**
 	 * Erstellt das Display.
 	 * @param universe Das SimpleUniverse.
@@ -339,7 +376,7 @@ public class View3D extends MouseAdapter implements Observer {
 		shape.setAppearance(display);
 		universe.addBranchGraph(theScene);		
 	}
-	
+
 	/**
 	 * Erstellt die Buttons.
 	 * @param universe Das SimpleUniverse.
@@ -367,33 +404,47 @@ public class View3D extends MouseAdapter implements Observer {
 		universe.addBranchGraph(theScene);
 		return theScene;		
 	}
-	
+
 	/**
-	 * Wird bei Mausklick ausgefuehrt.
+	 * Aktualisiert das Display
 	 */
-	public void mouseClicked(MouseEvent e){
-		if(win==false){
-		    pickCanvas.setShapeLocation(e);
-		    PickResult result = pickCanvas.pickClosest();
-		    if(result == null){
-		       System.out.println("Nothing picked");
-		    }else{
-		       Shape3D s = (Shape3D)result.getNode(PickResult.SHAPE3D);
-		       String name= result.getNode(PickResult.SHAPE3D).getName();
-		       if(getActive(Integer.parseInt(name))){
-		    	   if(!name.equals("1")){
-		    		   if(!name.equals("5")){
-		    			   buttonClicked.add(Integer.parseInt(name));
-		    		   }
-		    	   }
-			       if(s !=null){
-				    	subject.play(name);
-				    }else{
-				    	System.out.println("Fatal Error!");
-				    }
-		       }
-		    }   
-		}
+	private void changeDisplayTexture() {
+		TextureLoader loader= new TextureLoader(image);
+		ImageComponent2D texImage = loader.getImage();
+		Texture2D texture = new Texture2D(Texture.BASE_LEVEL, Texture.RGB,texImage.getWidth(), texImage.getHeight());
+		texture.setImage(0, texImage);
+		texture.setBoundaryModeS(Texture.CLAMP_TO_EDGE);
+	    texture.setBoundaryModeT(Texture.CLAMP_TO_EDGE);
+	    texture.setBoundaryColor(new Color4f(0.0f, 1.0f, 0.0f, 0.0f));
+		textureUnitState[0].setTexture(texture);
+	}
+
+	/**
+	 * Oeffnet die Hilfe-Datei.
+	 */
+	private void help() {
+		JFrame helpFrame = new JFrame();
+		helpFrame.getContentPane().setLayout(new FlowLayout());
+		helpFrame.getContentPane().add(new JLabel(new ImageIcon(loadImage("Hilfe.jpg"))));
+		helpFrame.pack();
+		helpFrame.setTitle("Help");
+		helpFrame.setSize(800, 600);
+		helpFrame.setVisible(true);	
+	}
+
+	/**
+	 * Gibt Gewinnmitteilung aus.
+	 */
+	private void win() {
+		win=true;
+		JFrame winFrame = new JFrame();
+		winFrame.getContentPane().setLayout(new FlowLayout());
+		winFrame.getContentPane().add(new JLabel(new ImageIcon(loadImage("GameOver.jpg"))));
+		winFrame.pack();
+		winFrame.setTitle("Win");
+		winFrame.setSize(800, 600);
+		winFrame.setVisible(true);
+		winFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
 	/**
@@ -447,15 +498,5 @@ public class View3D extends MouseAdapter implements Observer {
 			return active5;
 		}
 		return true;
-	}
-	
-	private BufferedImage loadImage(String name){
-		BufferedImage newImage = null;
-		try {
-			newImage = ImageIO.read(new FileInputStream("res/action_images/"+name));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return newImage;
 	}
 }

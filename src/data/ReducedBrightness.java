@@ -1,5 +1,10 @@
 package data;
 
+/** Hochschule Hamm-Lippstadt
+ * Praktikum Visual Computing I (Unthief)
+ * (C) 2015 Kevin Otte, Adrian Schmidt, Fabian Schneider
+ */
+
 import java.awt.image.*;
 
 public class ReducedBrightness extends Interference {
@@ -10,21 +15,6 @@ public class ReducedBrightness extends Interference {
 	public ReducedBrightness(BufferedImage image){
 		this.image=image;
 		reduce();
-	}
-	
-	/**
-	* Getter fuer das bearbeitete Bild
-	* @return Das bearbeitete Bild
-	*/
-	public BufferedImage getImage(){
-		return image;
-	}
-	
-	/** Getter fuer die ID.
-	 * @return Gibt die ID zurueck.
-	 */
-	public int getID(){
-		return ID;
 	}
 	
 	public void reduce() {
@@ -45,5 +35,20 @@ public class ReducedBrightness extends Interference {
 		}
 		
 		image.setData(raster);
+	}
+
+	/**
+	* Getter fuer das bearbeitete Bild
+	* @return Das bearbeitete Bild
+	*/
+	public BufferedImage getImage(){
+		return image;
+	}
+	
+	/** Getter fuer die ID.
+	 * @return Gibt die ID zurueck.
+	 */
+	public int getID(){
+		return ID;
 	}
 }

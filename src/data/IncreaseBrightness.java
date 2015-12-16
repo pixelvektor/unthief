@@ -1,11 +1,19 @@
 package data;
 
+/** Hochschule Hamm-Lippstadt
+ * Praktikum Visual Computing I (Unthief)
+ * (C) 2015 Kevin Otte, Adrian Schmidt, Fabian Schneider
+ */
+
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 
 public class IncreaseBrightness extends Filter{
+	/** Das zu bearbeitende Bild. */
 	private BufferedImage image;
+	/** Skalierungsfaktor. */
 	private final static float INC_FACTOR = 1.3333f;
+	/** ID des Filters. */
     private final static int ID = 5;
 	
 	public IncreaseBrightness(BufferedImage image){
@@ -13,20 +21,9 @@ public class IncreaseBrightness extends Filter{
 		increase();
 	}
 	
-	/** Getter fuer das bearbeitete Bild.
-	* @return Das bearbeitete Bild.
-	*/
-	public BufferedImage getImage(){
-		return image;
-	}
-	
-	/** Getter fuer die ID.
-	 * @return Gibt die ID zurueck.
+	/**
+	 * Erhoeht die Helligkeit.
 	 */
-	public int getID(){
-		return ID;
-	}
-	
 	public void increase() {
 		WritableRaster raster = image.getRaster();
 		int bands = raster.getNumBands();
@@ -45,5 +42,19 @@ public class IncreaseBrightness extends Filter{
 		}
 		
 		image.setData(raster);
+	}
+
+	/** Getter fuer das bearbeitete Bild.
+	* @return Das bearbeitete Bild.
+	*/
+	public BufferedImage getImage(){
+		return image;
+	}
+	
+	/** Getter fuer die ID.
+	 * @return Gibt die ID zurueck.
+	 */
+	public int getID(){
+		return ID;
 	}
 }

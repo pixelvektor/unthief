@@ -1,5 +1,10 @@
 package data;
 
+/** Hochschule Hamm-Lippstadt
+ * Praktikum Visual Computing I (Unthief)
+ * (C) 2015 Kevin Otte, Adrian Schmidt, Fabian Schneider
+ */
+
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 
@@ -44,7 +49,7 @@ public class Code extends Image{
 			System.out.println(order[i]);
 		}
 	}
-	
+
 	/** Getter fuer die Reihenfolge der Filter.
 	 * @return Gibt die Reihenfolge der Filter zurueck.
 	 */
