@@ -18,19 +18,34 @@ import com.jogamp.openal.util.ALut;
 import control.MainControl;
 import data.FileLister;
 
+/** Steuert die Audiosignale und gibt diese aus.
+ */
 public class Audio3D implements Observer {
+	/** ArrayList mit den Audiodateien. */
 	private static ArrayList<String> fileList = new ArrayList<String>();
+	/** Pfad zu den Dateien. */
 	private static final String PATH = "res/audio/";
+	/** Das Observable. */
 	private MainControl subject;
+	/** Die AudioLibrary. */
 	private static AL al;
+	/** Buffer fuer die Audiodaten. */
     private static int[] buffer;
+    /** Die Audioquellen. */
     private static int[] source;
+    /** Die Audiopositionen. */
     private static List<float[]> sourcePos= new ArrayList<float[]>();
+    /** Position der Buttons an der linken Seite. */
     private static float[] sourcePosBleft = {0.5f, 0.7f, 0.0f};
+    /** Position der Buttons an der rechten Seite. */
     private static float[] sourcePosBright = {-0.5f, 0.7f, 0.0f};
+    /** Geschwindigkeit der Audioquellen. */
     private static float[] sourceVel = { 0.0f, 0.0f, 0.0f };
+    /** Position des Listeners. */
     private static float[] listenerPos = { 0.0f, 0.7f, 3.5f };
+    /** Geschwindigkeit des Listeners. */
     private static float[] listenerVel = { 0.0f, 0.0f, 0.0f };
+    /** Orientierung des Listeners. */
     private static float[] listenerOri = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f };
     
     @Override

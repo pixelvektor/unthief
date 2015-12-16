@@ -7,14 +7,14 @@ package data;
 
 import java.awt.image.*;
 
+/** Superklasse der Stoerungen.
+ */
 public class Interference {
 	
-	public Interference() {
-		
-	}
-
+	/** Getter fuer ein gestoertes Bild.
+	 * @return Gibt das gestoerte Bild zurueck.
+	 */
 	public BufferedImage getImage() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

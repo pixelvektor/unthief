@@ -7,17 +7,42 @@ package data;
 
 import java.awt.image.*;
 
+/** Reduziert die Helligkeit eines Bildes.
+ */
 public class ReducedBrightness extends Interference {
+	/** Das zu bearbeitende Bild*/
 	private BufferedImage image;
+	/** Faktor auf den die Helligkeit reduziert werden soll. */ 
 	private final static float RED_FACTOR = 0.75f;
+	/** Die ID der Stoerung. */
     private final static int ID = 5;
 	
-	public ReducedBrightness(BufferedImage image){
+    /** Ctor fuer die reduzierte Helligkeit.
+     * @param image Das zu bearbeitende Bild.
+     */
+	public ReducedBrightness(final BufferedImage image){
 		this.image=image;
 		reduce();
 	}
 	
-	public void reduce() {
+	/**
+	* Getter fuer das bearbeitete Bild
+	* @return Das bearbeitete Bild
+	*/
+	public BufferedImage getImage(){
+		return image;
+	}
+
+	/** Getter fuer die ID.
+	 * @return Gibt die ID zurueck.
+	 */
+	public int getID(){
+		return ID;
+	}
+
+	/** Reduziert die Helligkeit des Bildes.
+	 */
+	private void reduce() {
 		WritableRaster raster = image.getRaster();
 		int bands = raster.getNumBands();
 		int width = image.getWidth();
@@ -35,20 +60,5 @@ public class ReducedBrightness extends Interference {
 		}
 		
 		image.setData(raster);
-	}
-
-	/**
-	* Getter fuer das bearbeitete Bild
-	* @return Das bearbeitete Bild
-	*/
-	public BufferedImage getImage(){
-		return image;
-	}
-	
-	/** Getter fuer die ID.
-	 * @return Gibt die ID zurueck.
-	 */
-	public int getID(){
-		return ID;
 	}
 }

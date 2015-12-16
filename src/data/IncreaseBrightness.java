@@ -8,6 +8,8 @@ package data;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 
+/** Erhoeht die Helligkeit eines Bildes.
+ */
 public class IncreaseBrightness extends Filter{
 	/** Das zu bearbeitende Bild. */
 	private BufferedImage image;
@@ -16,15 +18,32 @@ public class IncreaseBrightness extends Filter{
 	/** ID des Filters. */
     private final static int ID = 5;
 	
+    /** Ctor fuer die erhoete Helligkeit.
+     * @param image Das zu bearbeitende Bild.
+     */
 	public IncreaseBrightness(BufferedImage image){
 		this.image=image;
 		increase();
 	}
 	
+	/** Getter fuer das bearbeitete Bild.
+	* @return Das bearbeitete Bild.
+	*/
+	public BufferedImage getImage(){
+		return image;
+	}
+
+	/** Getter fuer die ID.
+	 * @return Gibt die ID zurueck.
+	 */
+	public int getID(){
+		return ID;
+	}
+
 	/**
 	 * Erhoeht die Helligkeit.
 	 */
-	public void increase() {
+	private void increase() {
 		WritableRaster raster = image.getRaster();
 		int bands = raster.getNumBands();
 		int width = image.getWidth();
@@ -42,19 +61,5 @@ public class IncreaseBrightness extends Filter{
 		}
 		
 		image.setData(raster);
-	}
-
-	/** Getter fuer das bearbeitete Bild.
-	* @return Das bearbeitete Bild.
-	*/
-	public BufferedImage getImage(){
-		return image;
-	}
-	
-	/** Getter fuer die ID.
-	 * @return Gibt die ID zurueck.
-	 */
-	public int getID(){
-		return ID;
 	}
 }

@@ -1,19 +1,23 @@
 package data;
 
-/** Hochschule Hamm-Lippstadt
- * Praktikum Visual Computing I (Unthief)
- * (C) 2015 Kevin Otte, Adrian Schmidt, Fabian Schneider
- */
-
 import java.awt.image.BufferedImage;
 
+/** Superklasse der Filter.
+ */
 public class Filter {
+	/** Speichert die ID des Filters. */
 	private int id;
+	
+	/** Getter fuer ein gefiltertes Bild.
+	 * @return Gibt das gefilterte Bild zurueck.
+	 */
 	public BufferedImage getImage() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	
+	/** Getter fuer die ID des Filters.
+	 * @return Gibt die ID des Filters zurueck.
+	 */
 	public int getID(){
 		return id;
 	}

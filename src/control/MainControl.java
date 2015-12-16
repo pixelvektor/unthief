@@ -28,7 +28,8 @@ import data.Interference;
 import data.Noise;
 import data.ReducedBrightness;
 
-
+/** Observable, welches die Hauptsteuerung uebernimmt.
+ */
 public class MainControl extends Observable{
 	/** Bild */
 	private final Image image;
@@ -94,13 +95,11 @@ public class MainControl extends Observable{
 			Filter increaseContrast= new IncreaseBrightness(copyImage(image.getImage().get(image.getImage().size()-1)));
 			image.getImage().add(increaseContrast.getImage());
 			right.add(checkFilter(increaseContrast.getID()));
-			System.out.println(right.get(right.size()-2)+"!!!2");
 			if(right.size()>2){
 				setChanged();
 				notifyObservers(right.get(right.size()-2));
 			}
 			if(right.get(right.size()-2)==true){
-				System.out.println("xx2");
 				setChanged();
 				notifyObservers(image.getImage().get(image.getImage().size()-1));
 			}
@@ -109,7 +108,6 @@ public class MainControl extends Observable{
 		}
 		
 		if(button.equals("3")){
-			System.out.println("3");
 			setChanged();
 			notifyObservers("buttonClickedRight");
 			Filter deBlur= new DeBlur(copyImage(image.getImage().get(image.getImage().size()-1)));
@@ -195,7 +193,6 @@ public class MainControl extends Observable{
 	 */
 	private void codeAnalyse(){
 		for(int index=0;index<order.length;index++){
-			System.out.println(order[index]);
 			if(order[index]==5){
 				Interference reducedContrast= new ReducedBrightness(copyImage(image.getImage().get(image.getImage().size()-1)));
 				image.getImage().add(reducedContrast.getImage());
@@ -221,10 +218,8 @@ public class MainControl extends Observable{
 		for(int index=0; index<3;index++){
 			if(image.getImage().size()-5==index){
 				if(order[2-index]==id){
-					System.out.println("testBestanden");
 					return true;
 				}else{
-					System.out.println("testNichtBestanden");
 					return false;
 				}
 			}

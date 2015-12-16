@@ -8,14 +8,15 @@ package data;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 
+/** Fuegt zu einem Bild Rauschen hinzu.
+ */
 public class Noise extends Interference {
 	/** Das zu bearbeitende Bild */
 	private BufferedImage image;
 	/** ID der Stoerung. */
     private int id=7;
 	
-	/**
-	 * 
+	/** Ctor fuer das verrauschte Bild.
 	 * @param image Das zu bearbeitende Bild
 	 */
 	public Noise(BufferedImage image){

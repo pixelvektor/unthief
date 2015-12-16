@@ -12,6 +12,8 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
+/** Laedt ein Bild aus den Ressourcen.
+ */
 public class Image{
 	/** Name der Datei */
 	private final String file;
@@ -20,17 +22,30 @@ public class Image{
 	/** Pfad zu den Bildern */
 	private String path = "res/images/";
 	
+	/** Erstellt ein Bild fuer das Spiel.
+	 */
 	public Image(){
 		file = new FileLister(path, "jpg").getRandomFile();
 		loadImage();
 	}
 	
+	/** Erstellt ein Bild aus einem vorgegebenen Verzeichnis.
+	 * @param path Der Verzeichnispfad zum Bild.
+	 */
 	public Image(final String path) {
 		this.path = path;
 		file = new FileLister(path, "jpg").getRandomFile();
 		loadImage();
 	}
 	
+	/**
+	 * Getter fuer das Bild
+	 * @return das Bild
+	 */
+	public ArrayList<BufferedImage> getImage(){
+		return image;
+	}
+
 	/**
 	 * Laed das Bild
 	 */
@@ -42,13 +57,5 @@ public class Image{
 			e.printStackTrace();
 		}
 		image.add(newImage);
-	}
-	
-	/**
-	 * Getter fuer das Bild
-	 * @return das Bild
-	 */
-	public ArrayList<BufferedImage> getImage(){
-		return image;
 	}
 }

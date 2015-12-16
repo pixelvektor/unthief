@@ -9,6 +9,8 @@ import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.util.Arrays;
 
+/** Ernfernt Bildrauschen mittels Medianfilter.
+ */
 public class DeNoise extends Filter {
 	/** Das zu bearbeitende Bild. */
 	private BufferedImage image;

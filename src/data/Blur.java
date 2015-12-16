@@ -1,5 +1,9 @@
 package data;
 
+/** Hochschule Hamm-Lippstadt
+ * Praktikum Visual Computing I (Unthief)
+ * (C) 2015 Kevin Otte, Adrian Schmidt, Fabian Schneider
+ */
 
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
@@ -9,36 +13,34 @@ import org.apache.commons.math3.transform.DftNormalization;
 import org.apache.commons.math3.transform.FastFourierTransformer;
 import org.apache.commons.math3.transform.TransformType;
 
+/** Erstellt einen Motion Blur auf dem Bild.
+ */
 public class Blur extends Interference {
-	/** Name der Stoerung*/
-	private static final String NAME = "Unsharpen";
 	/** Das zu bearbeitende Bild*/
 	private BufferedImage image;
-	/** Blur Matrix*/
+	/** Die Blur Matrix (Punktantwort). */
 	private final static float[] BLUR_TARGET_F = {0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f};
+	/** Die Blur Matrix (Punktantwort). */
 	private final static double[] BLUR_TARGET = {0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
+	/** Die Blur Matrix (Punktantwort). */
 	private static Complex[] blurMatrix;
+	/** Die ID der Stoerung. */
 	private final static int ID = 2;
 	
-	/** Ctor fuer ein bild mit Blur.
+	/** Ctor fuer ein Bild mit Blur.
 	 * @param image Das zu bearbeitende Bild
 	 */
 	public Blur(BufferedImage image){
 		this.image=image;
 		
+		// Pixel eines Bildes.
 		int n = image.getWidth() * image.getHeight();
 		int fillSpace = fillSpace(n);
 		
 		blurMatrix = new Complex[n + fillSpace];
 		createBlurMatrix();
+		
 		blur();
-	}
-	
-	/** Getter fuer den Namen der Stoerung
-	 * @return Name der Stoerung
-	 */
-	public String getName() {
-		return NAME;
 	}
 	
 	/** Getter fuer das bearbeitete Bild
@@ -48,17 +50,28 @@ public class Blur extends Interference {
 		return image;
 	}
 	
+	/** Getter fuer die Blur Matrix in komplexen Zahlen.
+	 * @return gibt die Blur Matrix in komplexen Zahlen zurueck.
+	 */
 	public static Complex[] getBlurMatrix() {
 		return blurMatrix;
 	}
 	
+	/** Getter fuer die ID der Stoerung.
+	 * @return Gibt die ID der Stoerung zurueck.
+	 */
 	public int getID(){
 		return ID;
 	}
 	
+	/** Berechnet den Platz bis zur naechst hoeheren 2er-Potenz.
+	 * @param n Der Wert zu dem der Platz berechnet werden soll.
+	 * @return Gibt den Platz als int zurueck.
+	 */
 	public static int fillSpace(final int n) {
 		int fillSpace = 0;
 		
+		// Schiebt die Maske binaer um den Faktor 2 (2er Potenz)
 		for (int mask = 1; mask < n; mask <<= 1) {
 			fillSpace = mask;
 		}
@@ -66,6 +79,36 @@ public class Blur extends Interference {
 		return fillSpace;
 	}
 
+	/** Wendet die Unschaerfe auf das Bild an. 
+	 */
+	private void blur() {
+		WritableRaster unBlurred = image.getRaster();
+		WritableRaster blurred = image.copyData(null);
+		int bands = unBlurred.getNumBands();
+		int width = image.getWidth();
+		int height = image.getHeight();
+		int filterLength = BLUR_TARGET_F.length;
+		int halfFilterLength = filterLength/2;
+		
+		for (int y = 0; y < height; y++) {
+			for (int x = halfFilterLength; x < (width - halfFilterLength); x++) {
+				float newSample = 0f;
+				for (int k = 0; k < filterLength; k++) {
+					int xOffset = - halfFilterLength + k;
+					float sample = unBlurred.getSampleFloat(x + xOffset, y, 0) * BLUR_TARGET_F[k];
+					newSample += sample;
+				}
+				for (int l = 0; l < bands; l++) {
+					blurred.setSample(x, y, l, newSample);
+				}
+			}
+		}
+		image.setData(blurred);
+	}
+
+	/** Erstellt die BlurMatrix passend zur Eingangsbildgroesse.
+	 * Die BlurMatrix liegt anschliessend in der Fouriertransformierten vor.
+	 */
 	private void createBlurMatrix() {
 		FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.STANDARD);
 		int size = blurMatrix.length;
@@ -86,6 +129,10 @@ public class Blur extends Interference {
 		
 	}
 	
+	/** Erstellt den Blur basierend auf der Fouriertransformation.
+	 * Funktion ist fehlerhaft:
+	 * Berechnung dauert zu lange, Bild wird schwarz.
+	 */
 	private void blurFFT() {
 		WritableRaster unblurred = image.getRaster();
 		FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.STANDARD);
@@ -162,6 +209,10 @@ public class Blur extends Interference {
 		}
 	}
 
+	/** Konvertiert ein eindimensionales Array in ein zweidimensionales.
+	 * @param from Das zu konvertierende Array.
+	 * @param to Das Array in das konvertiert werden soll.
+	 */
 	private void convertToMultiArray(final Complex[] from, final Complex[][] to) {
 		int k = 0;
 		for (int i = 0; i < to.length; i++) {
@@ -170,32 +221,5 @@ public class Blur extends Interference {
 				k++;
 			}
 		}
-	}
-	
-	/** Wendet die Unschaerfe auf das Bild an. 
-	 */
-	private void blur() {
-		WritableRaster unBlurred = image.getRaster();
-		WritableRaster blurred = image.copyData(null);
-		int bands = unBlurred.getNumBands();
-		int width = image.getWidth();
-		int height = image.getHeight();
-		int filterLength = BLUR_TARGET_F.length;
-		int halfFilterLength = filterLength/2;
-		
-		for (int y = 0; y < height; y++) {
-			for (int x = halfFilterLength; x < (width - halfFilterLength); x++) {
-				float newSample = 0f;
-				for (int k = 0; k < filterLength; k++) {
-					int xOffset = - halfFilterLength + k;
-					float sample = unBlurred.getSampleFloat(x + xOffset, y, 0) * BLUR_TARGET_F[k];
-					newSample += sample;
-				}
-				for (int l = 0; l < bands; l++) {
-					blurred.setSample(x, y, l, newSample);
-				}
-			}
-		}
-		image.setData(blurred);
 	}
 }

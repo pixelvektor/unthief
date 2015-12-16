@@ -8,6 +8,8 @@ package data;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 
+/** Liest einen Code von einem Bild ein und stellt die Zahlenfolge zur Verfuegung.
+ */
 public class Code extends Image{
 	/** Pfad zu den Codes.*/
 	private static final String PATH = "res/codes/";

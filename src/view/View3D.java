@@ -53,6 +53,8 @@ import com.sun.j3d.utils.picking.PickCanvas;
 import com.sun.j3d.utils.picking.PickResult;
 import com.sun.j3d.utils.universe.SimpleUniverse;
 
+/** Erstellt eine View mit Java3D.
+ */
 public class View3D extends MouseAdapter implements Observer {
 	/** Das Observabel. */
 	private MainControl subject;
@@ -474,7 +476,7 @@ public class View3D extends MouseAdapter implements Observer {
 	}
 	
 	/**
-	 * Getter f�r den Status des Buttons.
+	 * Getter fuer den Status des Buttons.
 	 * @param id ID des Buttons.
 	 * @return Der Status des Buttons.
 	 */
