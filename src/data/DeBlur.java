@@ -10,6 +10,7 @@ import org.apache.commons.math3.transform.TransformType;
 
 public class DeBlur extends Filter {
 	private final BufferedImage image;
+	private static final float[] BLUR_MATRIX_F = {0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f};
 	private static final Complex[] BLUR_MATRIX =  Blur.getBlurMatrix();
 	private static final int ID = 2;
 	
@@ -29,7 +30,7 @@ public class DeBlur extends Filter {
 		return ID;
 	}
 	
-	private void deBlur() {
+	private void deBlurFFT() {
 		WritableRaster blurred = image.getRaster();
 		FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.STANDARD);
 		
@@ -71,15 +72,13 @@ public class DeBlur extends Filter {
 		}
 	}
 	
-	/*
-	@Deprecated
-	private void deBlurOld() {
+	private void deBlur() {
 		WritableRaster blurred = image.getRaster();
 		WritableRaster unBlurred = image.copyData(null);
 		int bands = blurred.getNumBands();
 		int width = image.getWidth();
 		int heigth = image.getHeight();
-		int filterLength = BLUR_MATRIX.length;
+		int filterLength = BLUR_MATRIX_F.length;
 		int halfFilterLength = filterLength/2;
 		
 		float zero = 0f;
@@ -95,7 +94,7 @@ public class DeBlur extends Filter {
 			for (int x = halfFilterLength; x < (width - halfFilterLength); x++) {
 				float oldSample = blurred.getSampleFloat(x, y, 0);
 				for (int k = 0; k < filterLength; k++) {
-					float newSample = oldSample * BLUR_MATRIX[k];
+					float newSample = oldSample * BLUR_MATRIX_F[k];
 					int xOffset = - halfFilterLength + k;
 					for (int l = 0; l < bands; l++) {
 						float tmpSample = unBlurred.getSampleFloat(x + xOffset, y, l);
@@ -106,5 +105,4 @@ public class DeBlur extends Filter {
 		}
 		image.setData(unBlurred);
 	}
-	*/
 }
