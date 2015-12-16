@@ -1,20 +1,30 @@
 package data;
 
+/** Hochschule Hamm-Lippstadt
+ * Praktikum Visual Computing I (Unthief)
+ * (C) 2015 Kevin Otte, Adrian Schmidt, Fabian Schneider
+ */
+
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.util.Arrays;
 
 public class DeNoise extends Filter {
-	
+	/** Das zu bearbeitende Bild. */
 	private BufferedImage image;
+	/** 3x3 Matrix. */
 	int[] window=new int[9];
+	/** ID des Filters */
 	private int id=7;
 	
 	public DeNoise(BufferedImage image){
 		this.image=image;
 		saltNPepperDeNoise();
 	}
-
+	
+	/**
+	 * Erstellt einen Medianfilter.
+	 */
 	private void saltNPepperDeNoise() {
 		WritableRaster out = image.getRaster();
 		double widthImage=image.getWidth();
@@ -41,22 +51,19 @@ public class DeNoise extends Filter {
 				}
 				int middlex=x;
 				int middley=y;
-				for (int band=0; band<out.getNumBands(); band++){
-                	out.setSample(1, 1, band, 100);
+				if(window[4]==255){
+					Arrays.sort(window);
+					for (int band=0; band<out.getNumBands(); band++){
+                    	out.setSample(middlex, middley, band, window[4]);
+                    }
+					
 				}
-					if(window[4]==255){
-						Arrays.sort(window);
-						for (int band=0; band<out.getNumBands(); band++){
-	                    	out.setSample(middlex, middley, band, window[4]);
-	                    }
-						
-					}
-					if(window[4]==0){
-						Arrays.sort(window);
-						for (int band=0; band<out.getNumBands(); band++){
-	                    	out.setSample(middlex, middley, band, window[4]);
-	                    }
-					}
+				if(window[4]==0){
+					Arrays.sort(window);
+					for (int band=0; band<out.getNumBands(); band++){
+                    	out.setSample(middlex, middley, band, window[4]);
+                    }
+				}
 				
 				window=new int[9];
 				
@@ -74,6 +81,10 @@ public class DeNoise extends Filter {
 		return image;
 	}
 	
+	/**
+	 * Getter fuer die ID
+	 * @return die ID
+	 */
 	public int getID(){
 		return id;
 	}

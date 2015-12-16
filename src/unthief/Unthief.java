@@ -1,5 +1,10 @@
 package unthief;
 
+/** Hochschule Hamm-Lippstadt
+ * Praktikum Visual Computing I (Unthief)
+ * (C) 2015 Kevin Otte, Adrian Schmidt, Fabian Schneider
+ */
+
 import java.util.Observer;
 
 import control.MainControl;

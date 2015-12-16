@@ -1,28 +1,18 @@
 package data;
 
+/** Hochschule Hamm-Lippstadt
+ * Praktikum Visual Computing I (Unthief)
+ * (C) 2015 Kevin Otte, Adrian Schmidt, Fabian Schneider
+ */
 
 import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 
 public class Noise extends Interference {
-	/** Name der Stoerung*/
-	private static final String NAME = "Noise";
-	/** Das zu bearbeitende Bild*/
+	/** Das zu bearbeitende Bild */
 	private BufferedImage image;
+	/** ID der Stoerung. */
     private int id=7;
-	
-	/**
-	 * Getter fuer den Namen der Stoerung
-	 * @return Name der Stoerung
-	 */
-	public String getName() {
-		return NAME;
-	}
-	
-	public int getID(){
-		return id;
-	}
 	
 	/**
 	 * 
@@ -35,7 +25,7 @@ public class Noise extends Interference {
 	}
 	
 	/**
-	 * Methode fuer Bildrauschen
+	 * Methode fuer Bildrauschen.
 	 */
 	private void saltNPepperNoise() {
         WritableRaster out = image.getRaster();
@@ -68,5 +58,13 @@ public class Noise extends Interference {
 	 */
 	public BufferedImage getImage(){
 		return image;
+	}
+
+	/**
+	 * Getter fuer die ID.
+	 * @return die ID.
+	 */
+	public int getID(){
+		return id;
 	}
 }
