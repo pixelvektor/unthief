@@ -13,8 +13,8 @@ import java.awt.image.Raster;
 public class Code extends Image{
 	/** Pfad zu den Codes.*/
 	private static final String PATH = "res/codes/";
-	/** Array fuer die ausgelesenen Filter (4 Stueck) in ihrer Reihenfolge. */
-	private int[] order = new int[4];
+	/** Array fuer die ausgelesenen Filter (3 Stueck) in ihrer Reihenfolge. */
+	private int[] order = new int[3];
 	
 	/** Ctor fuer einen Code.
 	 * Erstellt einen Code und liest die Reihenfolge der Filter aus.
