@@ -64,12 +64,17 @@ public class DeBlur extends Filter {
 		int[] preBlurHistogram = createHistogram(preBlurBlurred);
 		int[] blurHistogram = createHistogram(image);
 		
+		int tolerance = 20;
 		boolean isEqual = true;
 		for (int i = 0; i < blurHistogram.length; i++) {
-			if (preBlurHistogram[i] != blurHistogram[i]) {
+			if (preBlurHistogram[i] >= (blurHistogram[i]+tolerance)
+					&& preBlurHistogram[i] <= (blurHistogram[i]-tolerance)) {
 				isEqual = false;
 			}
 		}
+		System.out.println(preBlurHistogram[100]);
+		System.out.println(blurHistogram[100]);
+		System.out.println(isEqual);
 		
 		if (isEqual) {
 			image = preBlur;
