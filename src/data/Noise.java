@@ -21,7 +21,6 @@ public class Noise extends Interference {
 	 */
 	public Noise(BufferedImage image){
 		this.image=image;
-		//output=image;
 		saltNPepperNoise();
 	}
 	
@@ -40,6 +39,7 @@ public class Noise extends Interference {
         for (int height=0; height<heightImage; height++) {
             for (int width=0; width<widthImage; width++) {
                 rand = randGen.nextDouble();
+                //zufaelliges SaltNPepper
                 if (rand > 0.9 && rand <=0.95) {
                     for (int band=0; band<bandsImage; band++){
                     	out.setSample(width, height, band, 0);

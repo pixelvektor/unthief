@@ -37,6 +37,7 @@ public class DeNoise extends Filter {
 		for(int y=edgey; y<heightImage-edgey;y++){
 			for(int x=edgex; x<widthImage-edgex;x++){
 				int i=0;
+				//3x3-Matrix
 				for(int fy=0; fy<3;fy++){
 					for(int fx=0; fx<3;fx++){
 						 if(fy==0){
@@ -53,6 +54,7 @@ public class DeNoise extends Filter {
 				}
 				int middlex=x;
 				int middley=y;
+				//Bildstoerung
 				if(window[4]==255){
 					Arrays.sort(window);
 					for (int band=0; band<out.getNumBands(); band++){
