@@ -6,6 +6,7 @@ package data;
  */
 
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
 
 import org.apache.commons.math3.complex.Complex;
@@ -33,14 +34,16 @@ public class Blur extends Interference {
 	public Blur(BufferedImage image){
 		this.image=image;
 		
+		/* Wird fuer die FFT Version benoetigt.
 		// Pixel eines Bildes.
 		int n = image.getWidth() * image.getHeight();
 		int fillSpace = fillSpace(n);
 		
 		blurMatrix = new Complex[n + fillSpace];
 		createBlurMatrix();
+		*/
 		
-		blur();
+		blur(image);
 	}
 	
 	/** Getter fuer das bearbeitete Bild
@@ -79,14 +82,15 @@ public class Blur extends Interference {
 		return fillSpace;
 	}
 
-	/** Wendet die Unschaerfe auf das Bild an. 
+	/** Wendet den MotionBlur auf das Bild an.
+	 * @param img Das Bild, welches geblurrt werden soll.
 	 */
-	private void blur() {
-		WritableRaster unBlurred = image.getRaster();
-		WritableRaster blurred = image.copyData(null);
+	public static void blur(final BufferedImage img) {
+		WritableRaster unBlurred = img.getRaster();
+		WritableRaster blurred = img.copyData(null);
 		int bands = unBlurred.getNumBands();
-		int width = image.getWidth();
-		int height = image.getHeight();
+		int width = img.getWidth();
+		int height = img.getHeight();
 		int filterLength = BLUR_TARGET_F.length;
 		int halfFilterLength = filterLength/2;
 		
@@ -103,7 +107,7 @@ public class Blur extends Interference {
 				}
 			}
 		}
-		image.setData(blurred);
+		img.setData(blurred);
 	}
 
 	/** Erstellt die BlurMatrix passend zur Eingangsbildgroesse.
@@ -114,8 +118,10 @@ public class Blur extends Interference {
 		int size = blurMatrix.length;
 		int width = image.getWidth();
 		int height = image.getHeight();
-		int halfStop = (height / 2) * width - (width / 2 - BLUR_TARGET.length / 2);
+		// Wert ab dem die PSF in die Matrix eingebaut werden soll
+		int halfStop = (height / 2) * width - (width / 2 - BLUR_TARGET.length / 2); 
 		
+		// Aufbauen der BlurMatrix
 		int j = 0;
 		for (int i = 0; i < size; i++) {
 			if (halfStop < i && i <= (halfStop + BLUR_TARGET.length)) {
@@ -145,12 +151,14 @@ public class Blur extends Interference {
 		
 		Complex[] f = new Complex[n + fillSpace];
 		
+		// Aufbau des Bildes als Complex
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				f[y * width + x] = new Complex(unblurred.getSampleDouble(x, y, 0));
 			}
 		}
 		
+		// Auffuellen des Complex Bild Arrays mit 0 bis zur naechsten 2er-Potenz
 		for (int l = n; l < (n  + fillSpace); l++) {
 			f[l] = new Complex(0);
 		}
@@ -164,22 +172,27 @@ public class Blur extends Interference {
 		
 		int ubRow = fMulti.length;
 		int ubCol = fMulti[0].length;
-		int blurRow = blurMatrixMulti.length;
 		int blurCol = blurMatrixMulti[0].length;
 		
 		convertToMultiArray(f, fMulti);
 		convertToMultiArray(blurMatrix, blurMatrixMulti);
 		
 		Complex[][] result = new Complex[ubRow][blurCol];
-		int blaRow = result.length;
-		int blaColumn = result[0].length;
+		int resultRow = result.length;
+		int resultColumn = result[0].length;
 		
-		for (int i = 0; i < blaRow; i++) {
-			for (int j = 0; j < blaColumn; j++) {
+		// Umwandeln in ein zweidimensionales Array fuer die Matrixmultiplikation
+		for (int i = 0; i < resultRow; i++) {
+			for (int j = 0; j < resultColumn; j++) {
 				result[i][j] = new Complex(0);
 			}
 		}
 		
+		/* Durchfuehren der Matrix Multiplikation mit dem fouriertransformierten
+		 * Filter blurMatrixMulti und Bild fMulti.
+		 * Das Ergebnis ist fehlerhaft, da das Resultat nach der Ruecktransformation
+		 * schwarz ist.
+		 */
 		for (int i = 0; i < ubRow; i++) {
 			for (int j = 0; j < blurCol; j++) {
 				for (int k = 0; k < ubCol; k++) {
@@ -189,17 +202,20 @@ public class Blur extends Interference {
 			}
 		}
 		
+		// Umwandeln in ein eindimensionales Array
 		int k = 0;
-		for (int i = 0; i < blaRow; i++) {
-			for (int j = 0; j < blaColumn; j++) {
+		for (int i = 0; i < resultRow; i++) {
+			for (int j = 0; j < resultColumn; j++) {
 				f[k] = result[i][j];
 				k++;
 			}
 			
 		}
 		
+		// Ruecktransformation
 		fft.transform(f, TransformType.INVERSE);
 		
+		// Setzen des geblurrten Bildes
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				for (int l = 0; l < bands; l++) {

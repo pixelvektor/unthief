@@ -21,9 +21,7 @@ public class Code extends Image{
 	 */
 	public Code() {
 		super(PATH);
-		System.out.println("Code erstellen ...");
 		readOrder();
-		System.out.println("done");
 	}
 	
 	/** Liest die Reihenfolge der Filter aus dem Code aus.
@@ -46,9 +44,6 @@ public class Code extends Image{
 				black = 0;
 				j++;
 			}
-		}
-		for (int i = 0; i < order.length; i++) {
-			System.out.println(order[i]);
 		}
 	}
 

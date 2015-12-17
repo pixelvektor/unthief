@@ -33,6 +33,8 @@ import data.ReducedBrightness;
 public class MainControl extends Observable{
 	/** Bild */
 	private final Image image;
+	/** Bild vor dem Blur. */
+	private BufferedImage preBlur;
 	/** Array der Reihenfolge der Stoerungen. */
 	private int order[];
 	/** ArrayList mit Ergebnissen von checkFilter(). */
@@ -54,15 +56,11 @@ public class MainControl extends Observable{
 	}
 	
 	/**
-	 * Kopiert Bilder.
-	 * @param image das zu kopierende Bild.
-	 * @return das kopierte Bild.
+	 * Counter fuer die richtigen Buttons.
 	 */
-	public static BufferedImage copyImage(BufferedImage image){
-		 ColorModel colorModel = image.getColorModel();
-		 boolean isAlphaPremultiplied = colorModel.isAlphaPremultiplied();
-		 WritableRaster raster = image.copyData(null);
-		 return new BufferedImage(colorModel, raster, isAlphaPremultiplied, null);
+	public void setGreen() {
+		green=green+1;
+		
 	}
 
 	/**
@@ -95,34 +93,16 @@ public class MainControl extends Observable{
 			Filter increaseContrast= new IncreaseBrightness(copyImage(image.getImage().get(image.getImage().size()-1)));
 			image.getImage().add(increaseContrast.getImage());
 			right.add(checkFilter(increaseContrast.getID()));
-			if(right.size()>2){
-				setChanged();
-				notifyObservers(right.get(right.size()-2));
-			}
-			if(right.get(right.size()-2)==true){
-				setChanged();
-				notifyObservers(image.getImage().get(image.getImage().size()-1));
-			}
-			setChanged();
-			notifyObservers("play");
+			checkNotify();
 		}
 		
 		if(button.equals("3")){
 			setChanged();
 			notifyObservers("buttonClickedRight");
-			Filter deBlur= new DeBlur(copyImage(image.getImage().get(image.getImage().size()-1)));
+			Filter deBlur= new DeBlur(copyImage(image.getImage().get(image.getImage().size()-1)), preBlur);
 			image.getImage().add(deBlur.getImage());
 			right.add(checkFilter(deBlur.getID()));
-			if(right.size()>2){
-				setChanged();
-				notifyObservers(right.get(right.size()-2));
-			}
-			if(right.get(right.size()-2)==true){
-				setChanged();
-				notifyObservers(image.getImage().get(image.getImage().size()-1));
-			}
-			setChanged();
-			notifyObservers("play");
+			checkNotify();
 		}
 		
 		if(button.equals("4")){
@@ -131,16 +111,7 @@ public class MainControl extends Observable{
 			Filter denoise=new DeNoise(copyImage(image.getImage().get(image.getImage().size()-1)));			
 			image.getImage().add(denoise.getImage());
 			right.add(checkFilter(denoise.getID()));
-			if(right.size()>2){
-				setChanged();
-				notifyObservers(right.get(right.size()-2));
-			}
-			if(right.get(right.size()-2)==true){
-				setChanged();
-				notifyObservers(image.getImage().get(image.getImage().size()-1));
-			}
-			setChanged();
-			notifyObservers("play");
+			checkNotify();
 			
 		}
 		
@@ -157,15 +128,36 @@ public class MainControl extends Observable{
 		}
 		
 	}
-	
+
 	/**
-	 * Counter fuer die richtigen Buttons.
+	 * Kopiert Bilder.
+	 * @param image das zu kopierende Bild.
+	 * @return das kopierte Bild.
 	 */
-	public void setGreen() {
-		green=green+1;
-		
+	private static BufferedImage copyImage(BufferedImage image){
+		 ColorModel colorModel = image.getColorModel();
+		 boolean isAlphaPremultiplied = colorModel.isAlphaPremultiplied();
+		 WritableRaster raster = image.copyData(null);
+		 return new BufferedImage(colorModel, raster, isAlphaPremultiplied, null);
 	}
 
+	/** Benachrichtigt die Observer.
+	 * - ueber die Richtigkeit des angewanten Filters
+	 * - das veraenderte Bild
+	 */
+	private void checkNotify() {
+		if(right.size()>2){
+			setChanged();
+			notifyObservers(right.get(right.size()-2));
+		}
+		if(right.get(right.size()-2)==true){
+			setChanged();
+			notifyObservers(image.getImage().get(image.getImage().size()-1));
+		}
+		setChanged();
+		notifyObservers("play");
+	}
+	
 	/**
 	 * Initialisiert das Spiel.
 	 */
@@ -192,7 +184,8 @@ public class MainControl extends Observable{
 				image.getImage().add(noise.getImage());
 			}
 			if(order[index]==2){
-				Interference blur = new Blur(copyImage(image.getImage().get(image.getImage().size()-1)));
+				preBlur = copyImage(image.getImage().get(image.getImage().size()-1));
+				Interference blur = new Blur(copyImage(preBlur));
 				image.getImage().add(blur.getImage());
 			}
 		}

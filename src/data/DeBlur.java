@@ -6,6 +6,7 @@ package data;
  */
 
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
 
 import org.apache.commons.math3.complex.Complex;
@@ -17,7 +18,9 @@ import org.apache.commons.math3.transform.TransformType;
  */
 public class DeBlur extends Filter {
 	/** Das zu bearbeitende Bild*/
-	private final BufferedImage image;
+	private BufferedImage image;
+	/** Das Bild vor dem Blur zum Vergleich. */
+	private final BufferedImage preBlur;
 	/** Die Blur Matrix (Punktantwort). */
 	private static final float[] BLUR_MATRIX_F = {0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f};
 	/** Die Blur Matrix (Punktantwort). */
@@ -28,8 +31,9 @@ public class DeBlur extends Filter {
 	/** Ctor fuer den Filter DeBlur.
 	 * @param image Das zu filternde Bild.
 	 */
-	public DeBlur(final BufferedImage image){
+	public DeBlur(final BufferedImage image, final BufferedImage preBlur){
 		this.image = image;
+		this.preBlur = preBlur;
 		deBlur();
 	}
 	
@@ -47,9 +51,58 @@ public class DeBlur extends Filter {
 		return ID;
 	}
 	
-	/** Ein gescheiterter Versuch das Bild von dem MotionBlur zu befreien.
+	/** Vergleicht ob preBlur und das Bild aus dem Blur die selben sind.
 	 */
 	private void deBlur() {
+		ColorModel colorModel = preBlur.getColorModel();
+		boolean isAlphaPremultiplied = colorModel.isAlphaPremultiplied();
+		WritableRaster raster = preBlur.copyData(null);
+		BufferedImage preBlurBlurred = new BufferedImage(colorModel, raster, isAlphaPremultiplied, null);
+		
+		Blur.blur(preBlurBlurred);
+		
+		int[] preBlurHistogram = createHistogram(preBlurBlurred);
+		int[] blurHistogram = createHistogram(image);
+		
+		boolean isEqual = true;
+		for (int i = 0; i < blurHistogram.length; i++) {
+			if (preBlurHistogram[i] != blurHistogram[i]) {
+				isEqual = false;
+			}
+		}
+		
+		if (isEqual) {
+			image = preBlur;
+		}
+		
+	}
+	
+	/** Erstellt ein Histogramm von dem uebergebenen Bild.
+	 * @param img Das Bild von dem das Histogramm erstellt werden soll.
+	 * @return Das Histogram als Integer Array.
+	 */
+	private int[] createHistogram(final BufferedImage img) {
+		int[] histogram = new int[256];
+		WritableRaster raster = img.getRaster();
+		int width = img.getWidth();
+		int height = img.getHeight();
+		
+		for (int i = 0; i < histogram.length; i++) {
+			histogram[i] = 0;
+		}
+		
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				histogram[raster.getSample(x, y, 0)]++;
+			}
+		}
+		
+		return histogram;
+	}
+	
+	/** Ein gescheiterter Versuch das Bild von dem MotionBlur zu befreien.
+	 */
+	private void deBlurOwn() {
 		WritableRaster blurred = image.getRaster();
 		WritableRaster unBlurred = image.copyData(null);
 		int bands = blurred.getNumBands();
@@ -84,7 +137,7 @@ public class DeBlur extends Filter {
 	}
 
 	/** Befreit das Bild von dem MotionBlur mittels der Fouriertransformation.
-	 * Nicht vollstaendig implementiert, aufgrund der Probleme in Blur.
+	 * Nicht vollstaendig implementiert, aufgrund der Probleme mit der FFT in Blur.
 	 */
 	private void deBlurFFT() {
 		WritableRaster blurred = image.getRaster();
