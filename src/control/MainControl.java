@@ -177,16 +177,6 @@ public class MainControl extends Observable{
 		setChanged();
 		notifyObservers("init");
 	}
-	
-	private void testbild(BufferedImage images){
-		
-		JFrame frame = new JFrame();
-		frame.getContentPane().setLayout(new FlowLayout());
-		frame.getContentPane().add(new JLabel(new ImageIcon(images)));
-		frame.pack();
-		frame.setVisible(true);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	}
 		
 	/**
 	 * Analysiert den Code und legt die Reihenfolge fest.

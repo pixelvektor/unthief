@@ -109,6 +109,7 @@ public class View3D extends MouseAdapter implements Observer {
 			image=(BufferedImage) arg;
 			if(init==1){
 				changeDisplayTexture();
+				//Der zuletzt geklickte Button
 				if(!buttons.getChild(buttonClicked.get(buttonClicked.size()-1)).getName().equals("0")){
 					Shape3D button=(Shape3D) buttons.getChild(buttonClicked.get(buttonClicked.size()-1));
 					button.setAppearance(clicked);
@@ -123,6 +124,7 @@ public class View3D extends MouseAdapter implements Observer {
 		}else if(arg instanceof Boolean){
 			Boolean check=(Boolean) arg;
 			if(check==false){
+				//Der falsch geklickte Button
 				Shape3D button=(Shape3D) buttons.getChild(buttonClicked.get(buttonClicked.size()-2));
 				button.setAppearance(wrong);
 				setActive(0,true);
@@ -130,6 +132,7 @@ public class View3D extends MouseAdapter implements Observer {
 					setActive(ind,false);
 				}
 			}else{
+				//Der richtig geklickte Button
 				Shape3D button=(Shape3D) buttons.getChild(buttonClicked.get(buttonClicked.size()-2));
 				button.setAppearance(right);
 				setActive(Integer.parseInt(buttons.getChild(buttonClicked.get(buttonClicked.size()-2)).getName()), false);
@@ -140,9 +143,9 @@ public class View3D extends MouseAdapter implements Observer {
 		}else if(arg instanceof String){
 			String message=(String) arg;
 			if(message.equals("back")){
+				//Setzt die Buttons zurueck
 				Shape3D button=(Shape3D) buttons.getChild(buttonClicked.get(buttonClicked.size()-3));
-				button.setAppearance(unClicked);
-				
+				button.setAppearance(unClicked);	
 				if(!buttonGreen.contains(2)){
 					setActive(2,true);	
 				}
@@ -152,6 +155,7 @@ public class View3D extends MouseAdapter implements Observer {
 				if(!buttonGreen.contains(4)){
 					setActive(4,true);	
 				}
+				setActive(0,false);
 			}
 			if(message.equals("win")){
 				Shape3D button=(Shape3D) buttons.getChild(buttonClicked.get(buttonClicked.size()-1));
@@ -176,6 +180,7 @@ public class View3D extends MouseAdapter implements Observer {
 		    }else{
 		       Shape3D s = (Shape3D)result.getNode(PickResult.SHAPE3D);
 		       String name= result.getNode(PickResult.SHAPE3D).getName();
+		       //Prueft ob Button aktiv ist
 		       if(getActive(Integer.parseInt(name))){
 		    	   if(!name.equals("1")){
 		    		   if(!name.equals("5")){
@@ -205,7 +210,8 @@ public class View3D extends MouseAdapter implements Observer {
 		universe.getViewingPlatform().setNominalViewingTransform();
 		
 		loadDisplayTexture();
-		 
+		
+		//Erstelle die verschiedenen Farben
 	    Color3f colClicked = new Color3f(1.0f, 1.0f, 1.0f);
 		ColoringAttributes colAtClicked = new ColoringAttributes(colClicked, ColoringAttributes.NICEST);
 		clicked.setColoringAttributes(colAtClicked);
@@ -222,22 +228,26 @@ public class View3D extends MouseAdapter implements Observer {
 		ColoringAttributes colAtWrong = new ColoringAttributes(colWrong, ColoringAttributes.NICEST);
 		wrong.setColoringAttributes(colAtWrong);
 	    
+		//Erstellt das 3D-Objekt
 		createBody(universe);
 		createDisplayCasing(universe);
 		createDisplay(universe);
 		buttons=createButton(universe);
 		
+		//Erstellt die klickbare Canvas
 	    pickCanvas= new PickCanvas(myCanvas, buttons);
 		pickCanvas.setMode(PickCanvas.BOUNDS);
 		myCanvas.addMouseListener((MouseListener) this);
 	    
 		createLights(universe);
 		
+		//Kameraposition
 		Transform3D tfCamera = new Transform3D();
 		tfCamera.setTranslation(new Vector3f(0.0f, 0.7f, 3.5f));
 		tgCamera = universe.getViewingPlatform().getViewPlatformTransform();
 		tgCamera.setTransform(tfCamera);
 		
+		//Das Hauptfenster
 		mainFrame.setTitle("Unthief");
 		mainFrame.setSize(1280, 720);
 		mainFrame.getContentPane().add("Center", myCanvas);
@@ -367,7 +377,7 @@ public class View3D extends MouseAdapter implements Observer {
 		
 		try
 		{
-			loadedScene = obj.load("res/obj/DisplayTest.obj");
+			loadedScene = obj.load("res/obj/Display.obj");
 		} catch (FileNotFoundException | IncorrectFormatException
 				| ParsingErrorException e)
 		{

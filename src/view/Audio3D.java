@@ -58,11 +58,9 @@ public class Audio3D implements Observer {
 				init();
 			}
 			if(message.equals("buttonClickedLeft")){
-				System.out.println(message);
 				playButton(fileList.size());
 			}
 			if(message.equals("buttonClickedRight")){
-				System.out.println(message);
 				playButton(fileList.size()+1);
 			}
 			if(message.equals("play")){
@@ -104,8 +102,10 @@ public class Audio3D implements Observer {
 	 */
 	private void init(){
 		fileList = new FileLister(PATH, "wav").getFiles();
+		//Audio+Buttonsound
 		buffer=new int[fileList.size()+2];
 		source=new int[fileList.size()+2];
+		//Quellen fuer Audio erstellen
 		for(int index = 0; index <= fileList.size()-1; index++){
 	    	sourcePos.add(randomSource());
 		}
@@ -122,6 +122,7 @@ public class Audio3D implements Observer {
 	        System.err.println("Error generating audio source.");
 	        System.exit(1);
 	    }
+	    //Quellen fuer Audio hinzufuegen
 	    for(int index = 0; index <= fileList.size()-1; index++){
 	    	addSource(index);
 	    }
@@ -143,15 +144,17 @@ public class Audio3D implements Observer {
         if (al.alGetError() != AL.AL_NO_ERROR) {
             return AL.AL_FALSE;
 	        }
+        //Laed Audiodateien fuer Audio
         for(int index = 0; index <= fileList.size()-1; index++){     
         	String file = PATH + fileList.get(index);
         	ALut.alutLoadWAVFile(file,format,data,size,freq,loop);
         	al.alBufferData(buffer[index],format[0],data[0],size[0],freq[0]);
         	
         }
-        ALut.alutLoadWAVFile("res/audio_bt/277651__coral-island-studios__button-4.wav", format, data, size, freq, loop);
+        //Der Buttonsound
+        ALut.alutLoadWAVFile("res/audio_bt/button.wav", format, data, size, freq, loop);
         al.alBufferData(buffer[fileList.size()], format[0], data[0], size[0], freq[0]);
-        
+        al.alBufferData(buffer[fileList.size()+1], format[0], data[0], size[0], freq[0]);
         if (al.alGetError() != AL.AL_NO_ERROR) {
             return AL.AL_FALSE;
         }
