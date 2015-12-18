@@ -32,7 +32,7 @@ public class Code extends Image{
 		Raster rasterImg = image.getRaster();
 		int width = image.getWidth();
 		
-		// Auslesen der Bildwerte
+		// Auslesen des Codebilds und aufaddieren der Schwarzwerte
 		int black = 0;
 		int j = 0;
 		for (int i = 0; i < width; i++) {

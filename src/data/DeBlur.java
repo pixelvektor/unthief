@@ -54,6 +54,7 @@ public class DeBlur extends Filter {
 	/** Vergleicht ob preBlur und das Bild aus dem Blur die selben sind.
 	 */
 	private void deBlur() {
+		// Sichern des Vergleichsbildes in einer zusaetzlichen Kopie fuer das Blur
 		ColorModel colorModel = preBlur.getColorModel();
 		boolean isAlphaPremultiplied = colorModel.isAlphaPremultiplied();
 		WritableRaster raster = preBlur.copyData(null);
@@ -64,6 +65,9 @@ public class DeBlur extends Filter {
 		int[] preBlurHistogram = createHistogram(preBlurBlurred);
 		int[] blurHistogram = createHistogram(image);
 		
+		/* Vergleichen der Histogramme mit einer Toleranz in den Grauwerten
+		 * Vorherige Filter koennen eine Differenz herbeigefuehrt haben
+		 */
 		int tolerance = 20;
 		boolean isEqual = true;
 		for (int i = 0; i < blurHistogram.length; i++) {
@@ -72,10 +76,8 @@ public class DeBlur extends Filter {
 				isEqual = false;
 			}
 		}
-		System.out.println(preBlurHistogram[100]);
-		System.out.println(blurHistogram[100]);
-		System.out.println(isEqual);
 		
+		// Setzen des vorherigen Bildes wenn die Histogramme uebereinstimmen
 		if (isEqual) {
 			image = preBlur;
 		}
@@ -92,10 +94,12 @@ public class DeBlur extends Filter {
 		int width = img.getWidth();
 		int height = img.getHeight();
 		
+		// Init des Arrays mit 0
 		for (int i = 0; i < histogram.length; i++) {
 			histogram[i] = 0;
 		}
 		
+		// Zusammenzaehlen der Grauwerte in ein Histogramm
 		for (int y = 0; y < height; y++) {
 			for (int x = 0; x < width; x++) {
 				histogram[raster.getSample(x, y, 0)]++;
@@ -116,6 +120,7 @@ public class DeBlur extends Filter {
 		int filterLength = BLUR_MATRIX_F.length;
 		int halfFilterLength = filterLength/2;
 		
+		// Init des neuen Bildes ohne Blur mit 0 = schwarz
 		float zero = 0f;
 		for (int y = 0; y < heigth; y++) {
 			for (int x = 0; x < width; x++) {
@@ -125,13 +130,14 @@ public class DeBlur extends Filter {
 			}
 		}
 		
+		// Verteilen der Anteile (laut Blur Matrix) von einem geblurten Pixel auf die Nachbarpixel
 		for (int y = 0; y < heigth; y++) {
 			for (int x = halfFilterLength; x < (width - halfFilterLength); x++) {
 				float oldSample = blurred.getSampleFloat(x, y, 0);
 				for (int k = 0; k < filterLength; k++) {
 					float newSample = oldSample * BLUR_MATRIX_F[k];
-					int xOffset = - halfFilterLength + k;
-					for (int l = 0; l < bands; l++) {
+					int xOffset = - halfFilterLength + k; // Offset zwischen aktuellem Pixel und dem zu berechnendem Nachbarpixel
+					for (int l = 0; l < bands; l++) { // Zusammenbauen der neuen Pixelwerte
 						float tmpSample = unBlurred.getSampleFloat(x + xOffset, y, l);
 						unBlurred.setSample(x + xOffset, y, l, newSample + tmpSample);
 					}

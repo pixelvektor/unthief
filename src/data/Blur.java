@@ -34,7 +34,7 @@ public class Blur extends Interference {
 	public Blur(BufferedImage image){
 		this.image=image;
 		
-		/* Wird fuer die FFT Version benoetigt.
+		/* Ist Teil der FFT Version.
 		// Pixel eines Bildes.
 		int n = image.getWidth() * image.getHeight();
 		int fillSpace = fillSpace(n);
@@ -94,15 +94,16 @@ public class Blur extends Interference {
 		int filterLength = BLUR_TARGET_F.length;
 		int halfFilterLength = filterLength/2;
 		
+		// Die Nachbarpixel werden in einem Pixel zusammengerechnet (basierend auf Blur Matrix)
 		for (int y = 0; y < height; y++) {
 			for (int x = halfFilterLength; x < (width - halfFilterLength); x++) {
 				float newSample = 0f;
-				for (int k = 0; k < filterLength; k++) {
+				for (int k = 0; k < filterLength; k++) { // Zusammenrechnen der Nachbarpixel in ein neues Pixel
 					int xOffset = - halfFilterLength + k;
 					float sample = unBlurred.getSampleFloat(x + xOffset, y, 0) * BLUR_TARGET_F[k];
 					newSample += sample;
 				}
-				for (int l = 0; l < bands; l++) {
+				for (int l = 0; l < bands; l++) { // Speicherung in neuem Bild
 					blurred.setSample(x, y, l, newSample);
 				}
 			}
